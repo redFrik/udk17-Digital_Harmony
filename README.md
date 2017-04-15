@@ -11,7 +11,17 @@ room111, UdK, medienhaus, kleistpark
 dates
 -----
 
-TODO will come soon.
+- [ ] [04may 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170504): introduction and overview
+- [ ] 11may 14-16
+- [ ] 18may 14-16
+- [ ] 25may: **NO CLASS** (holiday)
+- [ ] 01jun 14-16
+- [ ] 08jun 14-16
+- [ ] 15jun 14-16
+- [ ] 22jun 14-16
+- [ ] 29jun 14-16
+- [ ] 06jul 14-16
+- [ ] 13jul 14-16
 
 links to previous semesters... <http://redfrik.github.io/udk00-Audiovisual_Programming/>
 
