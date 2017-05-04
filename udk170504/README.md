@@ -88,7 +88,8 @@ you should see a level meter window.
 
 ```supercollider
 b= Buffer.readChannel(s, "/Users/asdf/Desktop/Main Beats/ND_BeatA128-01.wav", channels:[0]);
-b.play;  //test that it is working
+b.play;  //test that it is working - you should here the file playing
+//stop with cmd+. on osx, ctrl+. on windows
 
 Ndef(\player1, {Pan2.ar(GrainBuf.ar(1, Dust.kr(MouseX.kr(1, 20)), 1, b, MouseY.kr(0, 20)))}).play;
 
@@ -105,7 +106,7 @@ the following line will generate a gui for your three ndefs...
 NdefMixer(s);
 ```
 
-run it in the background with unity - notice how you now can relate sound settings with the help of mouse position on the background picture.
+now run supercollider in the background with the unity scene on top - notice how you now can relate sound settings with the help of mouse position on the background picture.
 
 extra
 --
@@ -124,7 +125,7 @@ function Update() {
     if(Input.GetMouseButton(0)) {
         em.enabled= true;
     } else {
-    em.enabled= false;
+        em.enabled= false;
     }
 }
 ```
