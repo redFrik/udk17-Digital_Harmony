@@ -90,14 +90,20 @@ you should see a level meter window.
 b= Buffer.readChannel(s, "/Users/asdf/Desktop/Main Beats/ND_BeatA128-01.wav", channels:[0]);
 b.play;  //test that it is working
 
-Ndef(\player, {Pan2.ar(GrainBuf.ar(1, Dust.kr(MouseX.kr(1, 20)), 1, b, MouseY.kr(0, 20)))}).play;
+Ndef(\player1, {Pan2.ar(GrainBuf.ar(1, Dust.kr(MouseX.kr(1, 20)), 1, b, MouseY.kr(0, 20)))}).play;
 
-Ndef(\player, {Pan2.ar(GrainBuf.ar(1, Impulse.kr(MouseX.kr(1, 20)), 1, b, MouseY.kr(0, 20)))}).play
+Ndef(\player2, {Pan2.ar(GrainBuf.ar(1, Impulse.kr(MouseX.kr(1, 20)), 1, b, MouseY.kr(0, 20)))}).play
 
-Ndef(\player, {Pan2.ar(GrainBuf.ar(1, Impulse.kr(MouseX.kr(1, 20)*MouseButton.kr), 1, b, 1, MouseY.kr(0, 1)))}).play
+Ndef(\player3, {Pan2.ar(GrainBuf.ar(1, Impulse.kr(MouseX.kr(1, 20)*MouseButton.kr), 1, b, 1, MouseY.kr(0, 1)))}).play
 ```
 
 run the code and explore by changing different numbers.
+
+the following line will generate a gui for your three ndefs...
+
+```supercollider
+NdefMixer(s);
+```
 
 run it in the background with unity - notice how you now can relate sound settings with the help of mouse position on the background picture.
 
