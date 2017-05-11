@@ -8,8 +8,8 @@ basically shaders are small programs that run in parallel on the gpu (graphics c
 fullscreen shader
 --
 
-* create a new unity project
-* add some cubes or other objects
+* create a new 3d unity project (although 2d will also work)
+* add some cubes or other objects (you can add more as we go or even afterwards)
 * select the Main Camera and click 'Add Component' in the inspector
 * select 'New Script', make sure language is set to Javascript and give it a name (here 'post')
 * doubleclick the script icon to open it in MonoDevelop
@@ -40,7 +40,7 @@ the javascript code above uses [Blit](https://docs.unity3d.com/ScriptReference/G
 * save and switch back to unity
 * in the Assets menu, select 'Create / Material' 
 * optionally give it a name (here 'postmaterial')
-* in the material's inspector set 'Shader' to 'MyShaders/FirstExperiments'
+* (if needed) in the material's inspector set 'Shader' to 'MyShaders/FirstExperiments'
 
 ![material](02material.png?raw=true "material")
 
@@ -272,3 +272,12 @@ n.sendMsg(\hallo, 0.7)
 n.sendMsg(\hello, 0.8)
 ```
  you should see your messages posted in unity's console window.
+
+links
+--
+
+<https://www.youtube.com/watch?v=C0uJ4sZelio>
+
+<http://shadertoy.com>
+
+<https://shawnlawson.github.io/The_Force/>
