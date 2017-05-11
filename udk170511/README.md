@@ -47,16 +47,19 @@ the javascript code above uses [Blit](https://docs.unity3d.com/ScriptReference/G
 * last select the Main Camera and drag&drop your material to 'Mat'
 * press run and it should look like this...
 
-![mat](03mat.png?raw=true "mat")
+![shader](03shader.png?raw=true "shader")
 
 now we are set up and ready to experiment with the shader code.
 
+frag
+--
+
 * doubleclick to open the shader (here 'postshader') in MonoDevelop
-* change the line near the bottom `col = 1 - col;` to `col = (sin(_Time[1]*10)*0.5) + col;`
+* change the line near the bottom `col = 1 - col;` to something like `col = (sin(_Time[1]*10)*0.5) + col;`
 * in unity click run
 
 the line `col = 1 - col` was responsible for inverting all the colours. we replaced it with a sin function using the global time (in seconds) to get the pulsating fullscreen colour effect.
-bascially this line is running for each pixel in the whole screen and add or subtract a bit to the pixel's colour.
+basically this line is running for each pixel in the whole screen and add or subtract a bit to the pixel's colour.
 in a 1920x1080 window this means that this shader program will run 2073600 times each frame. but because the graphic card in your computer do all these calculations (in parallel) we will not notice any dropped frames or higher cpu load.
 
 * find and tick the small 'maximize on play' option
@@ -75,9 +78,6 @@ col = _Time[1]/50%col;  //more modulor
 col = tan(col);  //simple colour adjustment
 col = tan(col+sin(_Time[1]*0.1));  //night and day
 ```
-
-frag
---
 
 so far we only used the fragment shader program to change the colours of all the pixels in the same manner. we will get much more interesting results if we start change pixels according to their position. with the `i.uv` argument passed into the fragment shader we can get the pixel's normalized screen coordinates.
 
@@ -98,7 +98,6 @@ col = float4(col.r, 0, col.b, 1.0);  //set green to 0 in all pixels
 col = float4(col.r, i.uv.x, col.b, 1.0);  //green goes from 0 to 1 depending on x position
 col = float4(sin(_Time[1]*20+i.uv.x), cos(_Time[1]*8+i.uv.y), col.b, 1.0);  //usch
 ```
-
 
 let us make some simple patterns ignoring the original 'col'...
 
@@ -140,7 +139,6 @@ fixed4 frag (v2f i) : SV_Target
 }
 ```
 
-
 vert
 --
 
@@ -148,6 +146,7 @@ now let us try also manipulating the vertices. this is another program that run 
 think of vertices as all 'corner positions' defining all shapes in the scene.  there are a lot fewer vertices as pixels (fragments) in a scene.
 
 find the vertex program in the same shader file...
+
 ```
 v2f vert (appdata v)
 {
@@ -158,7 +157,7 @@ v2f vert (appdata v)
 }
 ```
 
-if we invert all the values the picture will be flipped left/right upside down...
+if we invert all the values the picture will be flipped left/right and upside down...
 
 ```
 o.uv = 1-v.uv;
@@ -179,4 +178,97 @@ opensoundcontrol
 
 ```supercollider
 n= NetAddr("127.0.0.1", 57120);
+n.sendMsg(\hello, 1, 2, 3);  //send to yourself - but no listener yet
+
+OSCdef(\listener, {|msg| msg.postln}, \hello);  //listener
+n.sendMsg(\hello, 1, 2, 3);  //again send to yourself
+
+
+s.boot;
+OSCdef(\listener, {|msg| (note: msg[1]).play}, \hello);  //new listener - overwrites old
+n.sendMsg(\hello, 3);
+n.sendMsg(\hello, 5);
+n.sendMsg(\hello, 7);
+
+
+m= NetAddr("192.168.1.4", 57120);  //supercollider running one another computer - edit to match
+m.sendMsg(\hello, 8);  //should play on someones
+m.sendMsg(\hello, 9);
+n.sendMsg(\hello, 12);  //yourself again
 ```
+
+we can also send to other programs. open 'Terminal' and type...
+```
+nc -luk 14000
+```
+
+then back in supercollider...
+
+```supercollider
+n= NetAddr("127.0.0.1", 14000);
+n.sendMsg(\hallo, 0.5)
+```
+
+in terminal you should see `/hallo,f?` where f? mean a float value that couldn't be displayed. so we sent an opensound control (udp) message from sc to nc (netcat) on the port 14000. stop nc in terminal with cmd+c
+
+sc to unity
+--
+
+now let us send from supercollider to unity.
+
+* go to <https://github.com/heaversm/unity-osc-receiver> and click the green download button
+* get the .zip file and uncompress it
+* start unity and create a new project
+* find the folder Plugins in the zip you just uncompressed (unity-osc-receiver-master / Assets)
+* drag&drop 'Plugins' into unity's assets window (bottom)
+* select GameObject / Create Empty
+* in the inspector select 'Add Component / Scripts / Osc'
+* and again select 'Add Component / Scripts / UDP Packet IO'
+* your scene should now look like this and these steps are always needed when you want to send and receive osc...
+
+![01init](01init.png?raw=true "init")
+
+now let us create a custom receiver script.
+
+* make sure the GameObject is selected in Hierarchy window like before
+* in the inspector select 'Add Component / New Script'
+* call it something (here 'receiver'), make sure language is **javascript** and click 'Create and Add'
+* double click the script to open it in MonoDevelop
+* paste in the following code replacing what was there...
+
+```javascript
+//this code is a template for receiving osc - edit to match your scene
+#pragma strict
+
+public var RemoteIP : String = "127.0.0.1";
+public var SendToPort : int = 57120;
+public var ListenerPort : int = 8400;
+private var osc : Osc;
+
+function Start () {
+    var udp : UDPPacketIO = GetComponent("UDPPacketIO");
+    udp.init(RemoteIP, SendToPort, ListenerPort);
+    osc = GetComponent("Osc");
+    osc.init(udp);
+    osc.SetAllMessageHandler(AllMessageHandler);
+}
+
+public function AllMessageHandler(oscMessage: OscMessage) {
+    var msgString = Osc.OscMessageToString(oscMessage);
+    var msgAddress = oscMessage.Address;
+    var msgValue = oscMessage.Values;
+    Debug.Log(msgString);
+    if(msgAddress == "/hello") {
+        Debug.Log("got a hello");
+    }
+}
+```
+
+make sure the console is visible in unity and run. in supercollider run the following...
+
+```supercollider
+n= NetAddr("127.0.0.1", 8400);
+n.sendMsg(\hallo, 0.7)
+n.sendMsg(\hello, 0.8)
+```
+ you should see your messages posted in unity's console window.
