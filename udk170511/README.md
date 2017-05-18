@@ -1,4 +1,4 @@
-shaders
+post processing shaders + osc
 --------------------
 
 today we will explore shaders. shaders can among other things be used as post processing effects.
@@ -245,7 +245,7 @@ public var SendToPort : int = 57120;
 public var ListenerPort : int = 8400;
 private var osc : Osc;
 
-function Start () {
+function Start() {
     var udp : UDPPacketIO = GetComponent("UDPPacketIO");
     udp.init(RemoteIP, SendToPort, ListenerPort);
     osc = GetComponent("Osc");
