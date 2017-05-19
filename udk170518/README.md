@@ -6,7 +6,7 @@ repetition and continuation of shaders and open sound control from last week
 osc
 --
 
-to set up unity to listen to incoming osc messages do the following...
+to set up unity to listen to incoming osc messages do the following (as we did so many times)...
 
 * create a new 3d unity project
 * select 'GameObject / 3D Object / Cube' to add a simple cube
@@ -29,7 +29,7 @@ public var RemoteIP : String = "127.0.0.1";
 public var SendToPort : int = 57120;
 public var ListenerPort : int = 8400;
 private var osc : Osc;
-public var left : float = 0.0;
+public var left : float = 0.0;  //note: we need these global variables because unity will not allow setting gameobject properties from inside the osc handler function
 public var right : float = 0.0;
 
 function Start() {
@@ -69,7 +69,7 @@ your scene should look like this...
 
 ![osc](01osc.png?raw=true "osc")
 
-now switch over to supercollider and try sending some simple messages
+now run and switch over to supercollider. try sending some simple messages...
 
 ```supercollider
 //run each line separately
@@ -81,6 +81,8 @@ NetAddr("127.0.0.1", 8400).sendMsg(\fromSC, 0.004, 0.005);
 you should see the left and right values in the inspector update and the camera should move.
 
 in unity go into 'Edit / Project Settings / Player' and tick 'Run In Background' if you want to keep supercollider as your front application.
+
+try this little gui widget. it will also send osc - just like the lines of code above.
 
 ```supercollider
 Slider2D().front.action= {|view| NetAddr("127.0.0.1", 8400).sendMsg(\fromSC, view.x, view.y)};
@@ -148,7 +150,7 @@ Ndef(\snd, {CombC.ar(Saw.ar(Ndef.ar(\lfo).exprange(50, 500).round(25)), 0.1, 0.1
 Ndef(\snd).stop;
 ```
 
-pitch tracking
+osc pitch tracking
 --
 
 another possibility is to track the pitch (frequency) of the sound. this is a bit more advanced as the pitch tracker isn't perfect and you will get errors. also the values reported are in Hertz (typically 60-4000) and you will want to scale that to a range suitable for unity (here -1 to 1).
@@ -171,6 +173,179 @@ Ndef(\snd).stop;
 pitch tracking works best with monophonic and simple sounds. noisy or rich sounds or chords will mess up the analysis.
 
 there are much more data you can extract from sound. for example see [SCMIR](https://composerprogrammer.com/code.html) and other plugins by Nick Collins.
+
+shader control
+--
+
+switch back to unity and let us now control a post processing (fullscreen) shader using osc. so like last week...
+
+* select the Main Camera and click 'Add Component' in the inspector
+* select 'New Script', make sure language is set to Javascript and give it a name (here 'postscript')
+* doubleclick the script icon to open it in MonoDevelop
+* replace what is there with the code below
+
+```javascript
+#pragma strict
+
+var mat: Material;
+
+function OnRenderImage(src: RenderTexture, dest: RenderTexture) {
+    Graphics.Blit(src, dest, mat);
+}
+```
+
+* in the Assets menu, select 'Create / Shader / Image Effect Shader' 
+* optionally give it a name (here 'postshader')
+* doubleclick the shader icon to open it in MonoDevelop
+* in the first line change `"Hidden/NewImageEffectShader"` to `"MyShaders/post"`
+* save and switch back to unity
+* in the Assets menu, select 'Create / Material' 
+* optionally give it a name (here 'postmaterial')
+* (if needed) in the material's inspector set 'Shader' to 'MyShaders/post'
+* select the Main Camera and drag&drop your material to 'Mat' in the inspector
+
+test it by running the scene. you should see all colours inverted.
+
+we can now edit the fragment and vertex programs in the 'postshader' file. see [frag](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170511#frag) and [vert](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170511#vert) sections from last week.
+
+to control shader parameters via osc we need to do some more work.
+
+first replace the code in the receiver.js script with this...
+
+```javascript
+#pragma strict
+
+public var RemoteIP : String = "127.0.0.1";
+public var SendToPort : int = 57120;
+public var ListenerPort : int = 8400;
+private var osc : Osc;
+public var left : float = 0.0;
+public var right : float = 0.0;
+var mat: Material;  //material that holds our shader code
+
+function Start() {
+    var udp : UDPPacketIO = GetComponent("UDPPacketIO");
+    udp.init(RemoteIP, SendToPort, ListenerPort);
+    osc = GetComponent("Osc");
+    osc.init(udp);
+    osc.SetAllMessageHandler(AllMessageHandler);
+}
+
+function Update() {
+    mat.SetFloat("_Left", left);
+    mat.SetFloat("_Right", right);
+}
+
+public function AllMessageHandler(oscMessage: OscMessage) {
+    var msgAddress = oscMessage.Address;
+    if(msgAddress == "/fromSC") {
+        left= oscMessage.Values[0];
+        right= oscMessage.Values[1];
+    }
+}
+```
+
+(the only new thing is that we added a material variable and use the `SetFloat` methods on the material)
+
+next select the GameObject in unity and set the material variable by dragging&dropping the 'postmaterial' onto 'Mat' in the inspector
+
+![mat](02mat.png?raw=true "mat")
+
+the last thing to do is to change the shader code to accept the incomming floats (here called "_Left" and "_Right"). so we need to define two floats in 'Properties' (also other types possible - see [here](https://docs.unity3d.com/Manual/SL-PropertiesInPrograms.html) ), we also need to declare them as `uniform float` and then we should use them somehow in the code (here as simple offset in this line `fixed4 col = tex2D(_MainTex, i.uv+float2(_Left, _Right));`)
+
+so copy&paste the code below into your 'postshader' file replacing what was there.
+
+```
+Shader "MyShaders/post"
+{
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+        _Left ("left value from osc", Float) = 0
+        _Right ("right value from osc", Float) = 0
+    }
+    SubShader
+    {
+        // No culling or depth
+        Cull Off ZWrite Off ZTest Always
+        
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            
+            #include "UnityCG.cginc"
+            
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+            
+            struct v2f
+            {
+                float2 uv : TEXCOORD0;
+                float4 vertex : SV_POSITION;
+            };
+            
+            uniform float _Left;
+            uniform float _Right;
+            
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = v.uv;
+                return o;
+            }
+            
+            sampler2D _MainTex;
+            
+            fixed4 frag (v2f i) : SV_Target
+            {
+                fixed4 col = tex2D(_MainTex, i.uv+float2(_Left, _Right));
+                return col;
+            }
+            ENDCG
+        }
+    }
+}
+```
+
+the supercollider osc examples should now control the offset x/y positions of the whole scene. experiment with `_Left` and `_Right` in the shader code while some supercollider example is running in the background.
+
+some ideas for the fragment program...
+
+```
+fixed4 col = tex2D(_MainTex, i.uv+float2(sin(_Left*0.3), sin(_Right*0.3)));
+fixed4 col = tex2D(_MainTex, i.uv)+float4(_Left, _Right, 0, 1);
+fixed4 col = (tex2D(_MainTex, i.uv)+_Right)%float4(_Left, _Left, _Left, 1);
+fixed4 col = tex2D(_MainTex, float2(sin(i.uv.x*20)*_Left, sin(i.uv.y*10)*_Right));
+```
+
+or just overwrite colours and create your own patterns, ignoring what is in the scene...
+```
+fixed4 col = float4(sin(i.uv.x*20)*_Left, sin(i.uv.y*10)*_Right, 1, 1);
+fixed4 col = float4(sin(i.uv.x*_Left*100), sin(i.uv.y*_Right*100), 1, 1);
+fixed4 col = float4(_Left%i.uv.x, _Left%i.uv.x, _Left%i.uv.x, 1)+float4(_Right%i.uv.y, _Right%i.uv.y, _Right%i.uv.y, 1);
+```
+
+and likewise you can use these osc controlled variables in the vertex program...
+
+```
+o.uv = v.uv+float2(_Left*0.3, _Right*0.3);  //same as above
+o.uv = v.uv+float2(sin(o.vertex.x*_Left), sin(o.vertex.y*_Right));
+```
+
+maxmsp
+--
+
+if you rather want to control unity from some other program you can just ignore supercollider and send osc like in this maxmsp example...
+
+![maxmsp](03maxmsp.png?raw=true "maxmsp")
+
+so the osc message should be the address `/fromSC` together with two float values.
 
 leap
 --

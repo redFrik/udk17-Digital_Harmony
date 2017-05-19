@@ -44,7 +44,7 @@ the javascript code above uses [Blit](https://docs.unity3d.com/ScriptReference/G
 
 ![material](02material.png?raw=true "material")
 
-* last select the Main Camera and drag&drop your material to 'Mat'
+* last select the Main Camera and drag&drop your material to 'Mat' in the inspector
 * press run and it should look like this...
 
 ![shader](03shader.png?raw=true "shader")
@@ -82,7 +82,7 @@ col = tan(col+sin(_Time[1]*0.1));  //night and day
 so far we only used the fragment shader program to change the colours of all the pixels in the same manner. we will get much more interesting results if we start change pixels according to their position. with the `i.uv` argument passed into the fragment shader we can get the pixel's normalized screen coordinates.
 
 ```
-col = i.uv.r;  //simple gradiant - overwrite col with pixel x postion (0-1)
+col = i.uv.x;  //simple gradiant - overwrite col with pixel x postion (0-1)
 col = i.uv.y;  //same but for y
 col = col*i.uv.x;  //scale original pixel colour with pixel x position (0-1)
 col = col*sin(i.uv.x*30);  //fade in out many times
