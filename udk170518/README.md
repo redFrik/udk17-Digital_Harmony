@@ -385,7 +385,7 @@ $ mv Assets/Plugins/x86_64/libLeap* .
 $ mv Assets/Plugins/LeapCSharp.NET3.5.dll Assets/
 ```
 
-also you might need to do a workaround because of the unity versions and the case sensitivity:
+also you might need to do a workaround because of the unity versions and the lower case:
 
 (see here: <https://issuetracker.unity3d.com/issues/linux-editor-api-updater-fails-to-upgrade-this-dot-component-expressions>)
 
@@ -393,6 +393,8 @@ also you might need to do a workaround because of the unity versions and the cas
 $ cd /opt/Unity/Editor/Data/Mono/lib/mono/2.0/
 $ sudo ln -sf System.Xml.dll System.xml.dll
 ```
+
+then open `unity-editor`, open the Pendulum project, inside the `Project` select `Assets -> LeapMotion -> Scenes`, double click one of the scenes and click play.
 
 links
 --
