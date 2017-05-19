@@ -352,6 +352,8 @@ so the osc message should be the address `/fromSC` together with two float value
 leap
 --
 
+for linux see [leap in Linux](#leap-in-linux)
+
 here are instructions on how to use the [leap motion controller](http://leapmotion.com) with unity.
 
 * go to <https://github.com/leapmotion/LeapMotionCoreAssets> and download the library as zip
@@ -367,6 +369,30 @@ to use the controller inside an empty scene do the following...
 * add a `Cube`
 * select the Cube and click `Add Compoment` and then select `Physics / Rigidbody`
 * select the HandController and set the position to `X= 0`, `Y= -2`, `Z= -2` and scale to `X= 10`, `Y= 10`, `Z= 1`
+
+Leap in Linux
+--
+
+on linux you will need the repository <https://github.com/leapmotion/unity/>, the dynamic
+libraries are only available on the v2 directory.
+
+download the repository, enter the Pendulum example and prepare the project by
+copying the right files:
+
+```
+$ cd Pendulum
+$ mv Assets/Plugins/x86_64/libLeap* .
+$ mv Assets/Plugins/LeapCSharp.NET3.5.dll Assets/
+```
+
+also you might need to do a workaround because of the unity versions and the case sensitivity:
+
+(see here: <https://issuetracker.unity3d.com/issues/linux-editor-api-updater-fails-to-upgrade-this-dot-component-expressions>)
+
+```
+$ cd /opt/Unity/Editor/Data/Mono/lib/mono/2.0/
+$ sudo ln -sf System.Xml.dll System.xml.dll
+```
 
 links
 --
