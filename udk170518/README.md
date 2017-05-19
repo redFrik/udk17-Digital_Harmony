@@ -338,12 +338,14 @@ o.uv = v.uv+float2(_Left*0.3, _Right*0.3);  //same as above
 o.uv = v.uv+float2(sin(o.vertex.x*_Left), sin(o.vertex.y*_Right));
 ```
 
+![pattern](03pattern.png?raw=true "pattern")
+
 maxmsp
 --
 
 if you rather want to control unity from some other program you can just ignore supercollider and send osc like in this maxmsp example...
 
-![maxmsp](03maxmsp.png?raw=true "maxmsp")
+![maxmsp](04maxmsp.png?raw=true "maxmsp")
 
 so the osc message should be the address `/fromSC` together with two float values.
 
