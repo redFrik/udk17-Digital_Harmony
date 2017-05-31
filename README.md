@@ -15,7 +15,7 @@ dates
 - [x] [11may 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170511): post processing shaders + osc
 - [x] [18may 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170518): more shaders + more osc (leap)
 - [ ] 25may: **NO CLASS** (holiday)
-- [ ] 01jun 14-16
+- [ ] [01jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170601): ?
 - [ ] 08jun 14-16
 - [ ] 15jun 14-16
 - [ ] 22jun 14-16
