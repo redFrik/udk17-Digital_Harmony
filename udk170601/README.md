@@ -1,13 +1,14 @@
-more osc
+characters + more osc
 --------------------
 
+this time we will try out characters (players) in unity and also look at sending out controller osc data. (so far we have only received.)
 
 mixing osc
 --
 
 in this example we take in osc data from supercollider and *add* it to the position of a character (first person shooter prefab). this to demonstrate how we can both control the character using the standard keyboard and mouse controls, and at the same time mix in positional data from an oscillator via osc.
 
-* start unity and create a new project
+* start unity and create a new 3d project
 * select GameObject / 3D Object / Terrain
 * select Assets / Import Package / Characters
 * just click 'import' in the window that pops up to import everything
@@ -111,7 +112,155 @@ Ndef(\tracker, {
 )
 ```
 
+so with the last sc example you should be able to run around freely in unity, but when there is a loud sound detected your character will bounce in some random direction.
+
+try to write your own sound code. perhaps send a trigger osc message when a certain note in a melody is played, or use the position of the soundfile.
+also try spinning (rotating) the character instead of adding to its position. or scaling the characters size.
+
+remember that you can in unity go into 'Edit / Project Settings / Player' and tick 'Run In Background' if you want to keep supercollider as your front application.
+
+send osc
+--
+
+in this example we send a lot of data from unity to supercollider.
+
+* create a new 3d project
+* select GameObject / 3D Object / Plain
+* select Assets / Import Package / Characters
+* just click 'import' in the window that pops up to import everything
+* go to 'Project' tab and then expand Assets
+* find Standard Assets / Characters / ThirdPersonCharacter / Prefabs / ThirdPersonController
+* drag&drop ThirdPersonController onto the Hierarchy window
+* press the play button (ADWS or arrow keys to run around, + shift to walk, space to jump)
+
+now we need that osc plugin again...
+
+* go to <https://github.com/heaversm/unity-osc-receiver> and click the green download button
+* get the .zip file and uncompress it
+* find the folder Plugins in the zip you just uncompressed (unity-osc-receiver-master / Assets)
+* drag&drop 'Plugins' into unity's assets window (bottom)
+* select 'GameObject / Create Empty'
+* in the inspector select 'Add Component / Scripts / Osc'
+* and again select 'Add Component / Scripts / UDP Packet IO'
+* in the inspector select 'Add Component / New Script'
+* call it something (here 'sender'), make sure language is **javascript** and click 'Create and Add'
+* double click the script to open it in MonoDevelop
+* paste in the following code replacing what was there...
+
+```javascript
+#pragma strict
+
+public var RemoteIP : String = "127.0.0.1";
+public var SendToPort : int = 57120;
+public var ListenerPort : int = 8400;
+private var osc : Osc;
+
+function Start () {
+    var udp : UDPPacketIO = GetComponent("UDPPacketIO");
+    udp.init(RemoteIP, SendToPort, ListenerPort);
+    osc = GetComponent("Osc");
+    osc.init(udp);
+}
+
+function Update () {
+    var obj= GameObject.Find("ThirdPersonController");
+    var msg : OscMessage;
+    msg= Osc.StringToOscMessage("/tpc");
+    msg.Values.Add(obj.transform.localPosition.x);
+    msg.Values.Add(obj.transform.localPosition.y);
+    msg.Values.Add(obj.transform.localPosition.z);
+    msg.Values.Add(obj.transform.localRotation.x);
+    msg.Values.Add(obj.transform.localRotation.y);
+    msg.Values.Add(obj.transform.localRotation.z);
+    osc.Send(msg);
+    obj= obj.Find("EthanHips");
+    msg= Osc.StringToOscMessage("/tpc/hips");
+    msg.Values.Add(obj.transform.localPosition.x);
+    msg.Values.Add(obj.transform.localPosition.y);
+    msg.Values.Add(obj.transform.localPosition.z);
+    msg.Values.Add(obj.transform.localRotation.x);
+    msg.Values.Add(obj.transform.localRotation.y);
+    msg.Values.Add(obj.transform.localRotation.z);
+    osc.Send(msg);
+    obj= obj.Find("EthanLeftUpLeg");
+    msg= Osc.StringToOscMessage("/tpc/leftupleg");
+    msg.Values.Add(obj.transform.localPosition.x);
+    msg.Values.Add(obj.transform.localPosition.y);
+    msg.Values.Add(obj.transform.localPosition.z);
+    msg.Values.Add(obj.transform.localRotation.x);
+    msg.Values.Add(obj.transform.localRotation.y);
+    msg.Values.Add(obj.transform.localRotation.z);
+    osc.Send(msg);
+    obj= obj.Find("EthanLeftLeg");
+    msg= Osc.StringToOscMessage("/tpc/leftleg");
+    msg.Values.Add(obj.transform.localPosition.x);
+    msg.Values.Add(obj.transform.localPosition.y);
+    msg.Values.Add(obj.transform.localPosition.z);
+    msg.Values.Add(obj.transform.localRotation.x);
+    msg.Values.Add(obj.transform.localRotation.y);
+    msg.Values.Add(obj.transform.localRotation.z);
+    osc.Send(msg);
+    obj= obj.Find("EthanLeftFoot");
+    msg= Osc.StringToOscMessage("/tpc/leftfoot");
+    msg.Values.Add(obj.transform.localPosition.x);
+    msg.Values.Add(obj.transform.localPosition.y);
+    msg.Values.Add(obj.transform.localPosition.z);
+    msg.Values.Add(obj.transform.localRotation.x);
+    msg.Values.Add(obj.transform.localRotation.y);
+    msg.Values.Add(obj.transform.localRotation.z);
+    osc.Send(msg);
+    obj= obj.Find("EthanLeftToe1");
+    msg= Osc.StringToOscMessage("/tpc/lefttoe1");
+    msg.Values.Add(obj.transform.localPosition.x);
+    msg.Values.Add(obj.transform.localPosition.y);
+    msg.Values.Add(obj.transform.localPosition.z);
+    msg.Values.Add(obj.transform.localRotation.x);
+    msg.Values.Add(obj.transform.localRotation.y);
+    msg.Values.Add(obj.transform.localRotation.z);
+    osc.Send(msg);
+    //etc
+    //also note that one can simplify the above with a function
+}
+
+function OnDisable() {
+    osc.Cancel();
+    osc = null;
+}
+```
+
+play and switch over to supercollider. the following should post a lot of numbers in the post window.
+
+```supercollider
+(
+OSCFunc({|msg| msg.postln}, '/tpc');
+OSCFunc({|msg| msg.postln}, '/tpc/hips');
+OSCFunc({|msg| msg.postln}, '/tpc/leftupleg');
+OSCFunc({|msg| msg.postln}, '/tpc/leftleg');
+OSCFunc({|msg| msg.postln}, '/tpc/leftfoot');
+OSCFunc({|msg| msg.postln}, '/tpc/lefttoe1');
+)
+```
+
+and here is a more advanced example that build up a Ndef (sound) and an OSCFunc (receiver) for each address in a list.  position and rotation of some of the joins are mapped to frequency and amplitude respectively.
+
+```supercollider
+s.boot;
+
+(
+['/tpc', '/tpc/hips', '/tpc/leftupleg', '/tpc/leftleg', '/tpc/leftfoot', '/tpc/lefttoe1'].do{|x|
+    Ndef(x, {
+        Splay.ar(SinOsc.ar(\pos.kr([0, 0, 0]).linexp(-1, 1, 300, 3000), 0, HPF.kr(\rot.kr([0, 0, 0]),1)));
+    }).play;
+    OSCFunc({|msg|
+        Ndef(x).set(\pos, msg[1..3], \rot, msg[4..6]);
+    }, x);
+};
+)
+```
+
 extra
 --
 
-sending osc data from the position and rotation of a htc vive headset <https://github.com/redFrik/udk16-Immersive_Technologies/tree/master/udk170105#virtual-reality> and controllers
+similar examples from last semester <https://github.com/redFrik/udk16-Immersive_Technologies/tree/master/udk161208>
+
+sending the position and rotation of a htc vive headset and controllers <https://github.com/redFrik/udk16-Immersive_Technologies/tree/master/udk170105#virtual-reality>
