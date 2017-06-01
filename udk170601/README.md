@@ -219,7 +219,7 @@ function Update () {
     msg.Values.Add(obj.transform.localRotation.z);
     osc.Send(msg);
     //etc
-    //also note that one can simplify the above with a function
+    //also note that one can simplify the above with a function and/or arrays
 }
 
 function OnDisable() {
@@ -295,11 +295,12 @@ function Start() {
 }
 
 function Update() {
-    var obj0= GameObject.Find("Sphere");
+    var obj0= GameObject.Find("Sphere");  //should match name in Hierarchy window
     var obj1= GameObject.Find("Sphere (1)");
     var obj2= GameObject.Find("Sphere (2)");
     var obj3= GameObject.Find("Sphere (3)");
     var obj4= GameObject.Find("Sphere (4)");
+    //note a better way would be to give all objects a tag and then find them here using that
     var objs= [obj0, obj1, obj2, obj3, obj4];
 
     //--receive position
@@ -347,6 +348,8 @@ NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 4, 6, 2, 0);
 ```
 
 you should see the balls start to dance. try experimenting with the values in the message.  the second value is which ball (0-4) and the last three its x, y, z position.
+
+note that a more realistic method than to brutally set the objects to a position would be to briefly add a strong attractor or force for the object to react upon - a bit like hitting it to fly in some direction.
 
 now with sound...
 
