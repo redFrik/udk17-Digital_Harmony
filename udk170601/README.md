@@ -258,6 +258,185 @@ s.boot;
 )
 ```
 
+spring balls
+--
+
+* create a new 3d project
+* select GameObject / 3D Object / Sphere
+* select Component / Physics / Spring Joint
+* in the Hierarchy window duplicate the sphere four times
+* go though and set the x position for each sphere to -6, -3, 0, 3 and 6
+
+your scene should now look like this...
+
+![springballs](01springballs.png?raw=true "springballs")
+
+* create an empty game object, add the osc plug and the three scripts like above
+* paste in the following javascript code...
+
+```javascript
+#pragma strict
+
+public var RemoteIP : String = "127.0.0.1";
+public var SendToPort : int = 57120;
+public var ListenerPort : int = 8400;
+private var osc : Osc;
+private var ballIndex : int = -1;  //-1 means no ball selected
+private var ballX : float = 0.0;
+private var ballY : float = 0.0;
+private var ballZ : float = 0.0;
+
+function Start() {
+    var udp : UDPPacketIO = GetComponent("UDPPacketIO");
+    udp.init(RemoteIP, SendToPort, ListenerPort);
+    osc = GetComponent("Osc");
+    osc.init(udp);
+    osc.SetAllMessageHandler(AllMessageHandler);
+}
+
+function Update() {
+    var obj0= GameObject.Find("Sphere");
+    var obj1= GameObject.Find("Sphere (1)");
+    var obj2= GameObject.Find("Sphere (2)");
+    var obj3= GameObject.Find("Sphere (3)");
+    var obj4= GameObject.Find("Sphere (4)");
+    var objs= [obj0, obj1, obj2, obj3, obj4];
+
+    //--receive position
+    if(ballIndex>=0) {
+        var obj : GameObject = objs[ballIndex];
+        obj.transform.localPosition.x= ballX;
+        obj.transform.localPosition.y= ballY;
+        obj.transform.localPosition.z= ballZ;
+        ballIndex= -1;	//reset flag
+    }
+
+    //--send positions
+    var msg : OscMessage;
+    for(var i= 0; i<objs.length; i++) {
+        msg= Osc.StringToOscMessage("/objs");
+        msg.Values.Add(i);
+        msg.Values.Add(objs[i].transform.localPosition.x);
+        msg.Values.Add(objs[i].transform.localPosition.y);
+        msg.Values.Add(objs[i].transform.localPosition.z);
+        osc.Send(msg);
+    }
+}
+
+public function AllMessageHandler(oscMessage: OscMessage) {
+    var msgAddress = oscMessage.Address;
+    if(msgAddress == "/ballIndex") {
+        ballIndex= oscMessage.Values[0];
+        ballX= oscMessage.Values[1];
+        ballY= oscMessage.Values[2];
+        ballZ= oscMessage.Values[3];
+    }
+}
+```
+
+now set the scene to run in background (see above) and press play.
+
+move over to supercollider and try sending some trigger messages like this...
+
+```supercollider
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 0, -6, 2, 0);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 1, -3, 2, 0);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 2, 0, 2, 0);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 3, 3, 2, 0);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 4, 6, 2, 0);
+```
+
+you should see the balls start to dance. try experimenting with the values in the message.  the second value is which ball (0-4) and the last three its x, y, z position.
+
+now with sound...
+
+```supercollider
+s.boot;
+
+(
+var unity= NetAddr("127.0.0.1", 8400);  //address of unity program
+var num= 5;  //number of spheres
+var ndefs= {|i|
+    Ndef(("snd"++i).asSymbol, {|x, y, z, t_trig= 0|
+        var snd= SinOscFB.ar(y.linexp(-2, 1, 100, 1000).lag+(i*100), z.linlin(-1, 1, 0, 1).clip(0, 1), z.linlin(-1, 1, 0, 1));
+        var env= EnvGen.ar(Env.perc(0.01, 5), t_trig, 1, 0.1);
+        Pan2.ar(snd*env, x/6);
+    }).play;
+}.dup(5);
+//incoming osc should be: /objs, index(0-4), x, y, z
+OSCdef(\objs, {|msg|
+    ndefs[msg[1]].set(\x, msg[2], \y, msg[3], \z, msg[4]);
+}, \objs);
+)
+
+//trigger...
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 0, 5.0.rand2, 5.0.rand2, 5.0.rand2);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 1, 5.0.rand2, 5.0.rand2, 5.0.rand2);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 2, 5.0.rand2, 5.0.rand2, 5.0.rand2);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 3, 5.0.rand2, 5.0.rand2, 5.0.rand2);
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 4, 5.0.rand2, 5.0.rand2, 5.0.rand2);
+
+//run this fast multiple times
+NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, 2, 4.0.rand2, [0, -3, -6].choose, 3);
+
+//sequencer
+(
+Routine.run({
+    16.do{|i|
+        NetAddr("127.0.0.1", 8400).sendMsg(\ballIndex, i%5, 0, 5, 2);
+        0.2.wait;
+    };
+});
+)
+```
+
+in unity try chaning the overall gravity under Edit / Project Settings / Physics. also try chaning the sizes for all the spheres (change scale x, y, z for each).
+really fun is to mess with the 'Sphere Collider' center position (x, y, z) and radius for each sphere. you will get vibrato effects.
+
+and here's another sound for supercollider...
+
+```supercollider
+(
+var unity= NetAddr("127.0.0.1", 8400);  //address of unity program
+var num= 5;  //number of spheres
+var ndefs= {|i|
+    Ndef(("snd"++i).asSymbol, {|x, y, z, t_trig= 0|
+        var snd= LFSaw.ar(y.linexp(-2, 1, 50, 500).lag+(i*50), 0, z.linlin(-1, 1, 0, 1));
+        var efx= BPF.ar(snd, z.linexp(-1, 1, 100, 1000).lag(0.1), 0.2, 4).tanh;
+        var env= EnvGen.ar(Env.perc(0.01, 1), t_trig, 1, 0.1);
+        Pan2.ar(efx*env, x/6);
+    }).play;
+}.dup(5);
+//incoming osc should be: /objs, index(0-4), x, y, z
+OSCdef(\objs, {|msg|
+    ndefs[msg[1]].set(\x, msg[2], \y, msg[3], \z, msg[4]);
+}, \objs);
+)
+```
+
+and a last example using a soundfile...
+
+```supercollider
+b.free;
+b= Buffer.readChannel(s, "/Users/asdf/musicradar-nu-disco-samples/125bpm Loops n Lines/Guitar/ND_EnvGuitar_125_A-01.wav", channels:[0]);
+
+(
+var unity= NetAddr("127.0.0.1", 8400);  //address of unity program
+var num= 5;  //number of spheres
+var ndefs= {|i|
+    Ndef(("snd"++i).asSymbol, {|x, y, z, t_trig= 0|
+        var snd= BufRd.ar(1, b, K2A.ar(z).linlin(-6, 6, 0, BufFrames.kr(b)).lag(y.abs), 0);
+        var env= EnvGen.ar(Env.perc(0.01, 1), t_trig, 1, 0.1);
+        Pan2.ar(snd*env, x/6);
+    }).play;
+}.dup(5);
+//incoming osc should be: /objs, index(0-4), x, y, z
+OSCdef(\objs, {|msg|
+    ndefs[msg[1]].set(\x, msg[2], \y, msg[3], \z, msg[4]);
+}, \objs);
+)
+```
+
 extra
 --
 
