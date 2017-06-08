@@ -131,10 +131,61 @@ function Update() {
 }
 ```
 
+synthdef
+--
+
+```supercollider
+s.boot;
+
+(
+SynthDef(\ping, {|freq= 400, atk= 0.1, rel= 0.5, amp= 1, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp), doneAction:2);
+    var snd= SinOsc.ar(freq, env*2pi);
+    Out.ar(0, Pan2.ar(snd*env, pan));
+}).add;
+)
+
+Synth(\ping)
+Synth(\ping, [\freq, 900])
+Synth(\ping, [\freq, 900, \pan, 0.75, \amp, 0.3])
+```
+
+
+```supercollider
+(
+SynthDef(\snare, {|atk= 0.01, rel= 0.1, amp= 1, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp), doneAction:2);
+    var snd= ClipNoise.ar;
+    Out.ar(0, Pan2.ar(snd*env, pan));
+}).add;
+SynthDef(\kick, {|freq= 60, atk= 0.01, rel= 0.1, amp= 1, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp), doneAction:2);
+    var snd= SinOscFB.ar(freq, 1);
+    Out.ar(0, Pan2.ar(snd*env, pan));
+}).add;
+SynthDef(\hat, {|freq= 3000, atk= 0.01, rel= 0.05, amp= 1, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp), doneAction:2);
+    var snd= BPF.ar(ClipNoise.ar, freq, 0.5, 2);
+    Out.ar(0, Pan2.ar(snd*env, pan));
+}).add;
+)
+
+Synth(\snare)
+Synth(\kick)
+Synth(\hat)
+```
+
 pbind
 --
 
-
+```supercollider
+a= Pbind(\instrument, \ping).play
+a.stop
+a= Pbind(\instrument, \ping, \freq, Pseq([400, 200, 600, 700], inf)).play
+a.stop
+a= Pbind(\instrument, \ping, \freq, Pseq([400, 200, 600, 700], inf), \rel, 2, \dur, 0.3).play
+a.stop
+```
 
 links
 --
