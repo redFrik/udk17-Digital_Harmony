@@ -138,6 +138,28 @@ synthdef
 s.boot;
 
 (
+SynthDef(\thursday, {|amp= 1, freq= 500|
+    //var env= EnvGen.ar(Env.perc(0.01, 1), doneAction:2);
+    var env= EnvGen.ar(Env.sine(1), doneAction:2);
+    var snd= SinOsc.ar(freq, 0, amp);
+    Out.ar(0, Pan2.ar(snd*env, 0));
+}).add;
+)
+
+Env.perc(0.01, 1).plot;
+Env.sine(1).plot;
+
+Synth(\thursday);
+Synth(\thursday, [\freq, 600]);
+Synth(\thursday, [\freq, 400.rand+100]);
+
+(
+40.do{
+    Synth(\thursday, [\freq, 400.rand+100, \amp, 1.0.rand]);
+};
+)
+
+(
 SynthDef(\ping, {|freq= 400, atk= 0.1, rel= 0.5, amp= 1, pan= 0|
     var env= EnvGen.ar(Env.perc(atk, rel, amp), doneAction:2);
     var snd= SinOsc.ar(freq, env*2pi);
@@ -145,9 +167,10 @@ SynthDef(\ping, {|freq= 400, atk= 0.1, rel= 0.5, amp= 1, pan= 0|
 }).add;
 )
 
-Synth(\ping)
-Synth(\ping, [\freq, 900])
-Synth(\ping, [\freq, 900, \pan, 0.75, \amp, 0.3])
+Synth(\ping);
+Synth(\ping, [\freq, 900]);
+Synth(\ping, [\freq, 900, \pan, 0.75, \amp, 0.3]);
+Synth(\ping, [\freq, 1900, \pan, 0.75, \amp, 0.3, \atk, 0.001, \rel, 2, \pan, -0.75]);
 ```
 
 
@@ -185,7 +208,89 @@ a= Pbind(\instrument, \ping, \freq, Pseq([400, 200, 600, 700], inf)).play
 a.stop
 a= Pbind(\instrument, \ping, \freq, Pseq([400, 200, 600, 700], inf), \rel, 2, \dur, 0.3).play
 a.stop
+
+(
+Pbind(\instrument, \hat, \dur, Pseq([0.25, 0.5], inf)).play;
+Pbind(\instrument, \snare, \dur, 0.25).play;
+Pbind(\instrument, \kick, \dur, 0.5).play;
+)
+
+(
+Pbind(\instrument, \hat, \dur, Pseq([0.25, 0.5], inf)).play;
+Pbind(\instrument, \snare, \dur, 0.25).play;
+Pbind(\instrument, \kick, \dur, 0.5, \freq, Pseq([50, 500, 60, 99, 60], inf)).play;
+)
+
+//change the sound while the pbind is playing
+(
+SynthDef(\hat, {|amp= 1, pan= 0|
+    var env= EnvGen.ar(Env.perc(0.01, 0.1), doneAction:2);
+    var snd= Saw.ar(500*(env+1));
+    Out.ar(0, Pan2.ar(snd*env, pan));
+}).add;
+)
+
+(
+SynthDef(\hat, {|amp= 1, pan= 0|
+    var env= EnvGen.ar(Env.perc(0.001, 0.1, 1, -6), doneAction:2);
+    var snd= HPF.ar(WhiteNoise.ar, 2-env*1000);
+    Out.ar(0, Pan2.ar(snd*env, pan));
+}).add;
+)
+
+(
+//amplitude patterns - 8 steps
+Pbind(\instrument, \snare, \dur, 0.125, \amp, Pseq([0, 0, 0, 1, 0, 0, 0.1, 1], inf)).play;
+Pbind(\instrument, \kick,  \rel, Pseq([1, 0.5, 0.2, 0.1, 0.01], inf), \dur, Pseq([0.125, 0.125, 0.25], inf), \amp, Pseq([1, 0, 0, 0, 1, 0, 0.5], inf), \freq, 60).play;
+Pbind(\instrument, \hat,   \dur, 0.125, \amp, Pseq([0, 1, 0, 1, 0, 1, 0, 1], inf)).play;
+)
+
+
+TempoClock.default.tempo=80/60
+
+
+(
+//pdef - change while playing (no need to stop after changing the pattern code - just reevaluate and keep modeling the patterns)
+Pdef(\snarep, Pbind(\instrument, \snare, \dur, 0.25, \amp, Pseq([0, 0, 0, 1, 0, 0, 0.1, 1], inf))).play;
+Pdef(\kickp, Pbind(\instrument, \kick,  \rel, Pseq([1, 0.5, 0.2, 1.1, 0.01, 0.1, 0.1], inf), \dur, Pseq([0.125, 0.125, 0.25], inf), \amp, Pseq([1, 0, 0, 0, 1, 0, 0.5], inf), \freq, Pseq([60, 80, 90], inf))).play;
+Pdef(\hatp, Pbind(\instrument, \hat,   \dur, 0.25, \amp, Pseq([0, 1, 0, 1, 0, 1, 0, 1], inf))).play;
+)
+
+(
+//patterns can be nested - see snare's \dur
+Pdef(\snarep, Pbind(\instrument, \snare, \dur, Pseq([0.25, 0.25, 0.25, Pseq([0.125], 4)], inf), \amp, Pseq([0, 0, 0, 1, 0, 0, 0.1, 1], inf))).play;
+Pdef(\kickp, Pbind(\instrument, \kick,  \rel, Pseq([1, 0.5, 0.2, 1.1, 0.01, 0.1], inf), \dur, Pseq([0.125, 0.125, 0.25], inf), \amp, Pseq([1, 0, 0, 0, 1, 0, 0.5], inf), \freq, Pseq([60, 80, 90], inf))).play;
+Pdef(\hatp, Pbind(\instrument, \hat,   \dur, 0.25, \amp, Pseq([0, 1, 0, 1, 0, 1, 0, 1], inf))).play;
+)
+
+(
+//patterns can also be added, multiplied, subtracted etc - see kick's \freq
+Pdef(\snarep, Pbind(\instrument, \snare, \dur, Pseq([0.25, 0.25, 0.25, Pseq([0.125], 4)], inf), \amp, Pseq([0, 0, 0, 1, 0, 0, 0.1, 1], inf))).play;
+Pdef(\kickp, Pbind(\instrument, \kick,  \rel, Pseq([1, 0.5, 0.2, 1.1, 0.01, 0.1], inf), \dur, Pseq([0.125, 0.125, 0.25], inf), \amp, Pseq([1, 0, 0, 0, 1, 0, 0.5], inf), \freq, Pseq([60, 80, 90], inf)*Pstutter(4, Pseq([1, 1, 1, 1, 2, 3], inf)))).play;
+Pdef(\hatp, Pbind(\instrument, \hat,   \dur, 0.25, \amp, Pseq([0, 1, 0, 1, 0, 1, 0, 1], inf))).play;
+)
+
+(
+//or use randomness - see hat's \freq and \instrument
+Pdef(\snarep, Pbind(\instrument, \snare, \dur, Pseq([0.25, 0.25, 0.25, Pseq([0.125], 4)], inf), \amp, Pseq([0, 0, 0, 1, 0, 0, 0.1, 1], inf))).play;
+Pdef(\kickp, Pbind(\instrument, \kick,  \rel, Pseq([1, 0.5, 0.2, 1.1, 0.01, 0.1], inf), \dur, Pseq([0.125, 0.125, 0.25], inf), \amp, Pseq([1, 0, 0, 0, 1, 0, 0.5], inf), \freq, Pseq([60, 80, 90], inf)*Pstutter(4, Pseq([1, 1, 1, 1, 2, 3], inf)))).play;
+Pdef(\hatp, Pbind(\instrument, Pwrand([\hat, \ping], [0.6, 0.4], inf), \freq, Prand([320, 600, 2400], inf),  \rel, 0.6, \dur, 0.25, \amp, Pseq([0, 1, 0, 1, 0, 1, 0, 1], inf))).play;
+)
+
+//make your changes start at the next bar
+Pdef(\snarep).quant=4;
+Pdef(\kickp).quant=4;
+Pdef(\hatp).quant=4;
+
+Pdef(\snarep).stop;
+Pdef(\kickp).stop;
+Pdef(\hatp).stop;
 ```
+
+extra
+--
+
+study 'spacelab.scd' in SuperCollider / examples / pieces folder
 
 links
 --

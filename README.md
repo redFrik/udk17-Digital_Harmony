@@ -16,7 +16,7 @@ dates
 - [x] [18may 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170518): more shaders + more osc (leap)
 - [ ] 25may: **NO CLASS** (holiday)
 - [x] [01jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170601): characters + more osc
-- [ ] [08jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170608): instantiation
+- [x] [08jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170608): instantiation + patterns
 - [ ] 15jun 14-16
 - [ ] 22jun 14-16
 - [ ] 29jun 14-16
