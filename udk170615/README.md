@@ -3,6 +3,8 @@ textures
 
 here we try coding generative textures from scratch
 
+note: you can do all these things more efficiently using shaders, but it's good to know and sometimes neccessary to work with the texture itself.
+
 * start unity and create a new project (2D or 3D - here 2D)
 * select GameObject / 3D Objects / Capsule (or something else)
 * click 'Add Component' in the inspector and then 'New Script'
@@ -279,3 +281,40 @@ looping is always on, but it could also be off so that the file stops playing wh
 start position can be random or 0 to always begin from the beginning of the file.
 the trigger makes the `PlayBuf` jump to the start position. this can be modulated with a regular trigger signal (`Impulse` - will give a steady rhythm) or a random trigger (`Dust`).
 with trigger and startPos you can play sections of the buffer.
+
+one thing to try is to set up a mic recorder and then play back segments from that
+
+```supercollider
+b.free; b= Buffer.alloc(s, s.sampleRate*10);  //10 seconds - could be more
+c= {RecordBuf.ar(SoundIn.ar, b); Silent.ar}.play;  //keep this synth running - it records the mic into buffer b
+
+//to check what is in the buffer
+b.plot;
+
+//
+(
+Ndef(\snd, {|amp= 0.1, atk= 4, sus= 16, rel= 8|
+    var env= EnvGen.kr(Env.linen(atk, sus, rel), doneAction:2);
+    //var snd= PlayBuf.ar(1, b, 1, Impulse.ar(LinRand(0.1, 10)), Rand(0, BufFrames.kr(b)), loop:1);
+    var snd= PlayBuf.ar(1, b, LFNoise2.kr(0.01)/9+1, Impulse.ar(LinRand(0.1, 10)), Rand(0, BufFrames.kr(b)), loop:1);
+    Pan2.ar(snd, Rand(-0.75, 0.75), amp*env);
+});
+)
+
+Ndef(\snd).play;  //one
+Ndef(\snd).spawn;  //more
+```
+
+automate the spawning...
+
+```supercollider
+(
+Routine.run{
+    10.do{
+        "now!".postln;
+        Ndef(\snd).spawn;
+        1.wait;
+    };
+};
+)
+```
