@@ -155,6 +155,32 @@ function Update() {
 }
 ```
 
+weird pattern (the `>0?1:0` functions like an if statement)
+
+```javascript
+#pragma strict
+
+private var tex : Texture2D;
+
+function Start() {
+    tex= new Texture2D(256, 256);
+    GetComponent.<Renderer>().material.mainTexture= tex;  //connect texture to material of GameObject this script is attached to
+}
+function Update() {
+    for(var x= 0; x<tex.width; x++) {
+        for(var y= 0; y<tex.height; y++) {
+            tex.SetPixel(x, y, Color(
+                Mathf.Sin(x+(Time.frameCount*0.1)),
+                Mathf.Sin(y+(Time.frameCount*0.1)),
+                Mathf.Sin(x)>0 ? 1 : 0,
+                1.0
+            ));
+        }
+    }
+    tex.Apply();
+}
+```
+
 hack the script and try to add it to different objects (also 3D). try adding it to a particle system (will look strange).
 
 sound textures
