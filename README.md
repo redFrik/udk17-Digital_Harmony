@@ -18,7 +18,7 @@ dates
 - [x] [01jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170601): characters + more osc
 - [x] [08jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170608): instantiation + patterns
 - [x] [15jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170615): textures
-- [ ] 22jun 14-16
+- [ ] [22jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170622): samples
 - [ ] 29jun 14-16
 - [ ] 06jul 14-16
 - [ ] 13jul 14-16

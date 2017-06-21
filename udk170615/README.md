@@ -9,7 +9,7 @@ note: you can do all these things more efficiently using shaders, but it's good 
 * select GameObject / 3D Objects / Capsule (or something else)
 * click 'Add Component' in the inspector and then 'New Script'
 * give the script a name (here 'simpleTexture') and make sure language is JavaScript
-* doubleclick the mycode symbol and paste in the code here below
+* doubleclick the script symbol and paste in the code here below
 
 ```javascript
 #pragma strict
