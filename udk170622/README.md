@@ -263,7 +263,7 @@ SynthDef(\player, {|buf, amp= 0.1, rate= 1, offset= 0, atk= 0.005, rel= 0.01, ga
 )
 
 
-Pdef(\player1, Pbind(\instrument, \player, \dur, 0.5)).play;
+Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, 0.5)).play;
 
 Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, 0.5, \offset, Pseq([0, 0, 0.5], inf))).play;
 Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, Pseq([0.5, 0.25, 0.25, 0.25], inf), \offset, Pseq([0, 0, 0.5], inf))).play;
@@ -272,7 +272,6 @@ Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, Pseq([0.5, 0.25, 0.25,
 Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, Pseq([0.5, 0.25, 0.25, 0.25], inf), \offset, Pseq([0, 0, 0.5], inf), \rate, Pseq([0.5, -0.8], inf), \legato, 1)).play;
 Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, Pseq([0.5, 0.25, 0.25, 0.25], inf), \offset, Pseq([0, 0, 0.5], inf), \rate, Pseq([0.5, -0.8], inf), \legato, 1.5)).play;
 Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, Pseq([0.5, 0.25, 0.25, 0.25], inf), \offset, Pseq([0, 0, 0.5], inf), \rate, Pseq([0.5, -0.8], inf), \legato, 3)).play;
-
 
 
 Pdef(\player2, Pbind(\instrument, \player, \buf, b, \dur, 1, \legato, 0.25, \rel, 0.5)).play;
@@ -285,3 +284,34 @@ Pdef(\player3, Pbind(\instrument, \player, \buf, c, \dur, 0.75, \offset, 0.7, \a
 
 Pdef(\player4, Pbind(\instrument, \player, \buf, f, \dur, 2, \atk, 0.5, \rel, 0.5)).play;
 ```
+
+one can also create raw sample data arrays in supercollider, load them into buffers and play them - a bit like the import raw in audacity. this could be sensor data, strings, functions etc etc.
+
+```supercollider
+//create a buffers from functions or other data and play it using the pdef from above
+e= {|i| sin(i*0.02)}.dup(1000);  //a sine function
+//e= {|i| 1.0.rand2}.dup(1000);  //white noise (rand2 gives values from -1.0 to 1.0)
+//t= "some random text - could be REALLY long"; e= {|i| t.wrapAt(i).ascii}.dup(1000).normalize(-1, 1);
+a.free; a= Buffer.loadCollection(s, e, 2);
+Pdef(\player1, Pbind(\instrument, \player, \buf, a, \dur, 0.5)).play;
+```
+
+or we could create similar buffers but play them as controllers instead (LFOs)
+
+```supercollider
+//here a new synthdef that uses the sample data as frequencies for a sinosc - note mono buffer this time
+(
+SynthDef(\playerCtrl, {|buf, amp= 0.1, rate= 1, gate= 1|
+    var env= EnvGen.kr(Env.asr(0, amp, 0), gate, doneAction:2);
+    var ctrl= PlayBuf.kr(1, buf, rate*BufRateScale.ir(buf), 1, 0, 1);
+    var src= SinOsc.ar(ctrl.linexp(-1, 1, 200, 2000));
+    Out.ar(0, Pan2.ar(src, 0, env));
+}).add;
+)
+//e= {|i| sin(i*0.02)}.dup(1000);  //a sine function
+//e= {|i| 1.0.rand2}.dup(1000);  //white noise (rand2 gives values from -1.0 to 1.0)
+t= "some random text - could be REALLY long"; e= {|i| t.wrapAt(i).ascii}.dup(1000).normalize(-1, 1);
+a.free; a= Buffer.loadCollection(s, e, 1);
+Pdef(\player2, Pbind(\instrument, \playerCtrl, \buf, a, \dur, 4)).play;
+```
+
