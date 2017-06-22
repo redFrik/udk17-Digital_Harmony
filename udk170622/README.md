@@ -176,6 +176,11 @@ fixed4 frag(v2f i) : SV_Target {
 
 try editing the shader.
 
+here's one suggestion...
+```
+fixed4 col = tex2D(_MainTex, i.uv+sin(i.uv.y*5+(_Time[2]*100)))*40;
+```
+
 sonogram
 --
 
@@ -218,6 +223,121 @@ function Update() {
 
 again try with and without your shader from above. try to change it to draw from left to right instead (hint: swap x and y in one place). try making it draw faster.
 
+soundfiles
+--
+
+instead of the microphone you can use sound files.
+
+just drag&drop a soundfile into the assets window and then drag&drop that onto the Audio Source's AudioClip.
+
+it should look like this...
+
+![soundfile](01soundfile.png?raw=true "soundfile")
+
+then we change the javascript code to look like this...
+
+```javascript
+#pragma strict
+
+private var tex : Texture2D;
+private var samples : float[];
+private var snd : AudioSource;
+
+function Start() {
+    snd= GetComponent.<AudioSource>();
+    snd.loop= true;
+    samples= new float[snd.clip.samples*snd.clip.channels];
+    tex= new Texture2D(256, snd.clip.channels);
+    GetComponent.<Renderer>().material.mainTexture= tex;
+}
+function Update() {
+    snd.clip.GetData(samples, snd.timeSamples);
+    for(var y= 0; y<tex.height; y++) {
+        for(var x= 0; x<tex.width; x++) {
+            var sample= samples[x];
+            tex.SetPixel(x, y, Color(
+                sample,	//red
+                sample,	//green
+                sample,	//blue
+                1.0		//alpha
+            ));
+        }
+    }
+    tex.Apply();
+}
+```
+
+and with a soundfile the spectrum example above would look like this...
+
+```javascript
+#pragma strict
+
+private var tex : Texture2D;
+private var spectrum : float[];
+private var snd : AudioSource;
+public var scale= 10.0;
+private var bufferSize= 512;
+
+function Start() {
+    snd= GetComponent.<AudioSource>();
+    snd.loop= true;
+    spectrum= new float[bufferSize];
+    tex= new Texture2D(bufferSize, snd.clip.channels);
+    GetComponent.<Renderer>().material.mainTexture= tex;
+    //GetComponent.<Renderer>().material.shader= Shader.Find("Unlit/myshader");
+}
+function Update() {
+    snd.GetSpectrumData(spectrum, 0, FFTWindow.Hanning);
+    for(var y= 0; y<tex.height; y++) {
+        for(var x= 0; x<tex.width; x++) {
+            var sample= spectrum[x]*scale;
+            tex.SetPixel(x, y, Color(
+                sample,	//red
+                sample,	//green
+                sample,	//blue
+                1.0		//alpha
+            ));
+        }
+    }
+    tex.Apply();
+}
+```
+
+and the sonogram example from above would look like this using a soundfile instead of microphone...
+
+```javascript
+#pragma strict
+
+private var tex : Texture2D;
+private var spectrum : float[];
+private var snd : AudioSource;
+public var scale= 10.0;
+private var bufferSize= 512;
+
+function Start() {
+    snd= GetComponent.<AudioSource>();
+    snd.loop= true;
+    spectrum= new float[bufferSize];
+    tex= new Texture2D(bufferSize, bufferSize);  //now we use a 512x512 rectangular texture instead of 512x1
+    GetComponent.<Renderer>().material.mainTexture= tex;
+    //GetComponent.<Renderer>().material.shader= Shader.Find("Unlit/myshader");
+}
+function Update() {
+    snd.GetSpectrumData(spectrum, 0, FFTWindow.Hanning);
+    var y= Time.frameCount%bufferSize;
+    for(var x= 0; x<tex.width; x++) {
+        var sample= spectrum[x]*scale;
+        tex.SetPixel(x, y, Color(
+            sample,	//red
+            sample,	//green
+            sample,	//blue
+            1.0		//alpha
+        ));
+    }
+    tex.Apply();
+}
+```
+
 audacity
 --
 
@@ -229,7 +349,7 @@ download and install Audacity from <http://www.audacityteam.org>
 
 you should see something like this...
 
-![audacity](01audacity.png?raw=true "audacity")
+![audacity](02audacity.png?raw=true "audacity")
 
 it's usually a good idea to remove dc offset after importing raw files.
 
@@ -238,7 +358,7 @@ it's usually a good idea to remove dc offset after importing raw files.
 
 this will make your speakers happier and last longer.
 
-![audacity2](02audacity2.png?raw=true "audacity2")
+![audacity2](03audacity2.png?raw=true "audacity2")
 
 now export this file as `.aiff`. make a few different ones
 
