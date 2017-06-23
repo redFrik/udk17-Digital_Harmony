@@ -1,7 +1,7 @@
 samples
 --------------------
 
-again we will use textures in unity.
+again we will use textures in unity. this time experimenting with writing audio sample data directly into one dimensional textures.
 
 audio samples
 --
@@ -58,9 +58,9 @@ click play in unity and tap the microphone. you should see something like this..
 
 ![mic](00mic.png?raw=true "mic")
 
-if not the check that you have 'built-in microphone' selected as sound input in your system preferences.
+if not check that you have 'built-in microphone' selected as sound input source in your system preferences.
 
-try playing with the delay time in the inspector (0-43844), change the colours and texture resolution.
+try playing with the delay time in the inspector (usable range of values: 0-43844), try to change the colours and texture resolution.
 
 now let us add a shader.
 
@@ -115,7 +115,7 @@ and then back in the javascript code we add this line somewhere inside the Start
 GetComponent.<Renderer>().material.shader= Shader.Find("Unlit/myshader");
 ```
 
-while making sure that the name (here 'Unlit/myshader') matches the name at the top of the shader code above.
+make sure that the shader name (here 'Unlit/myshader') matches the name at the top of the shader code above.
 
 when you press play you should see the audio sampledata texture as wavy curves. try scaling and rotating the plane (`x= -90`) so that it fills the screen.
 
@@ -162,7 +162,7 @@ function Update() {
 }
 ```
 
-try with and without the shader (uncomment the `GetComponent` line in Start function).
+try with and without the shader (uncomment the `GetComponent` line in the Start function).
 
 the above will show the lower frequencies on the right hand side. to make it symmetric and mirror the lower frequencies in the middle, change the fragment shader to look like this...
 
@@ -183,6 +183,8 @@ fixed4 col = tex2D(_MainTex, i.uv+sin(i.uv.y*5+(_Time[2]*100)))*40;
 
 sonogram
 --
+
+replace the javascript with the following...
 
 ```javascript
 #pragma strict
@@ -221,7 +223,9 @@ function Update() {
 }
 ```
 
-again try with and without your shader from above. try to change it to draw from left to right instead (hint: swap x and y in one place). try making it draw faster.
+note how this time we set up a two dimensional texture (`Texture2D(bufferSize, bufferSize)`)
+
+again try with and without your shader from above. try to change it to draw from left to right instead (hint: swap x and y in one place). try making it draw faster/slower (hint: scale the frameCount), change the colours (hint: `sample*0.5+0.5` and `(1-sample)*0.75` etc)
 
 soundfiles
 --
@@ -230,7 +234,7 @@ instead of the microphone you can use sound files.
 
 just drag&drop a soundfile into the assets window and then drag&drop that onto the Audio Source's AudioClip.
 
-it should look like this...
+it should look like this... notice the blue outlined box.
 
 ![soundfile](01soundfile.png?raw=true "soundfile")
 
