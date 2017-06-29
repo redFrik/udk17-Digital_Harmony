@@ -203,6 +203,11 @@ c= {PanAz.ar(8, SoundIn.ar(2), SinOsc.kr(0.04))}.play;
 a.free; b.free; c.free;  //stop all
 ```
 
+speaker test
+--
+
+it is useful to have prepared code in supercollider for testing speaker systems. see <https://github.com/redFrik/udk11-Portable_sonification_projects/tree/master/udk140612#speaker-tests>
+
 externals
 --
 
