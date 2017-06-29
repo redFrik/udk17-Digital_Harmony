@@ -61,6 +61,56 @@ try setting xspeed to 0.0 and the sphere should only move away and towards you.
 
 add more objects with more soundfiles and effects (simplest is to just duplicate the sphere and then change soundfile, speeds etc)
 
+many textures
+--
+
+change the script to this... (similar but with y control and also added texture sample data from last week)
+
+```javascript
+#pragma strict
+
+private var tex : Texture2D;
+private var samples : float[];
+public var snd : AudioSource;
+
+public var xspeed = 0.05;
+public var yspeed = 0.015;
+public var zspeed = 0.05;
+public var xdist = 10;
+public var ydist = 3;
+public var zdist = 10;
+public var xoffset = 0;
+public var yoffset= 0;
+public var zoffset = 10;
+public var amp= 5;  //scale the sound data
+
+function Start() {
+    snd= GetComponent.<AudioSource>();
+    samples= new float[snd.clip.samples*snd.clip.channels];
+    tex= new Texture2D(32, snd.clip.channels);
+    GetComponent.<Renderer>().material.mainTexture= tex;
+}
+
+function Update() {
+    transform.localPosition.x= Mathf.Sin(Time.frameCount*xspeed)*xdist+xoffset;
+    transform.localPosition.y= Mathf.Cos(Time.frameCount*yspeed)*zdist+yoffset;
+    transform.localPosition.z= Mathf.Sin(Time.frameCount*zspeed)*zdist+zoffset;
+    snd.clip.GetData(samples, snd.timeSamples);
+    for(var y= 0; y<tex.height; y++) {
+        for(var x= 0; x<tex.width; x++) {
+            var sample= samples[x]*amp;
+            tex.SetPixel(x, y, Color(
+            sample,	//red
+            sample,	//green
+            sample,	//blue
+            1.0		//alpha
+            ));
+        }
+    }
+    tex.Apply();
+}
+```
+
 multichannel
 --
 
