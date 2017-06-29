@@ -55,9 +55,11 @@ you can also select the scene tab if you want to get an overview and see how the
 
 ![effects](01effects.png?raw=true "effects")
 
-play around with the effect settings, also change the javascript code and try different movements
+play around with the effect settings, also change the javascript code and try different movements.
 
-add more objects with more soundfiles and effects
+try setting xspeed to 0.0 and the sphere should only move away and towards you.
+
+add more objects with more soundfiles and effects (simplest is to just duplicate the sphere and then change soundfile, speeds etc)
 
 multichannel
 --
