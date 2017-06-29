@@ -120,6 +120,9 @@ try setting the clear flag in main camera inspector to 'do not clear'.
 
 remember you can also select a few objects and let them be the children of a single object. so some spheres circle around other spheres. do this by drag&drop in the hierarchy window. see left hand side of the screenshot right above.
 
+note that if you have a complex scene or slow computer the graphics might slow down the audio panning and it will not sound as good (if the framerate is low or unregular we hear that the sound is jumping). also your sounds might pan around faster on a faster computer or have hickups if you run something else in the background.
+so in general it is not a good idea to move sounds around using a graphics program - it'll work if you watch the framerate and keep the scene and objects simple, but better is to use an audio program like supercollider... 
+
 multichannel
 --
 
@@ -208,6 +211,8 @@ to do more advanced sound spacialization it is recommended to use some kind of p
 * VBAP (part of sc3-plugins) <https://github.com/supercollider/sc3-plugins/releases>
 * Beast <http://www.birmingham.ac.uk/facilities/ea-studios/research/mulch.aspx>
 * ATK <http://www.ambisonictoolkit.net>
+* Zirkonium <http://zkm.de/en/institutes-research-centers/zkm-institute-for-music-and-acoustics/software/zirkonium>
+* etc.
 
 soundcards
 --
@@ -217,3 +222,15 @@ soundcards
 * rme - very great but expensive
 * komplete audio - don't touch
 * etc.
+
+extra
+--
+
+in unity select Edit / Project Settings / Quality and then turn off 'V Sync Count'. watch how your scene now run much faster. you can see the framerate if you click the little 'Stats' button.
+vertical sync should always be *on* though. when vsync is on the program will never update the screen when the scanline is in the middle of the window drawing. it will draw the complete frame as rendered. if vsync is off you will get tearing artifacts.
+
+![framerate](03framerate.png?raw=true "framerate")
+
+now also try changing the quality levels. this might be useful to know about if you want to render some hi res stills.
+
+to change the general framerate you need to use a script. see <https://docs.unity3d.com/ScriptReference/Application-targetFrameRate.html>
