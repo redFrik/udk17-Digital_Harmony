@@ -57,7 +57,7 @@ to get a better overview you can also select the scene tab while playing (first 
 
 ![effects](01effects.png?raw=true "effects")
 
-if you don't hear any effect double check that you set the audio output to Master like in the 5th step above.
+you should be able to change the effect parameters in realtime. if you don't hear any effect double check that you set the audio output to Master like in the 5th step above.
 
 play around with the effect settings, also change the javascript code and try different movements.
 
@@ -116,7 +116,7 @@ function Update() {
 ```
 try setting the clear flag in main camera inspector to 'do not clear'.
 
-![sphere](00sphere.png?raw=true "sphere")
+![multiple](02multiple.png?raw=true "multiple")
 
 remember you can also select a few objects and let them be the children of a single object. so some spheres circle around other spheres. do this by drag&drop in the hierarchy window. see left hand side of the screenshot right above.
 
