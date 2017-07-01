@@ -20,7 +20,7 @@ dates
 - [x] [15jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170615): textures
 - [x] [22jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170622): samples
 - [x] [29jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170629): panning
-- [ ] 06jul 14-16
+- [ ] [06jul 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706): various
 - [ ] 13jul 14-16
 
 links to previous semesters... <http://redfrik.github.io/udk00-Audiovisual_Programming/>
