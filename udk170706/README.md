@@ -1,7 +1,7 @@
 various
 --------------------
 
-various questions and ideas that have come up.
+questions and ideas that have come up.
 
 recording sound
 --
@@ -104,15 +104,15 @@ function WriteHeader() {
 syphon
 --
 
-these instructions are ***mac osx*** only. for windows there is <http://spout.zeal.co>
+these instructions are ***mac osx*** only. for windows there is a similar texture sending application here... <http://spout.zeal.co>
 
-below demonstrates how to send your unity graphics to a [syhpon](http://syphon.v002.info) client (i.e. to another application on your own mac or on another computer).
+below demonstrates how to set up Funnel to make your unity scene send graphics to a [syhpon](http://syphon.v002.info) client (i.e. to another application on your own mac or on another computer).
 
 note: here we create a new scene but you can also use an old project.
 
 * start unity and create a new 3D project
 * select GameObject / Particle System
-* download 'the plugin package' from [here](https://github.com/keijiro/Funnel/tree/gllegacy#setting-up)
+* download Funnel by clicking 'the plugin package' on [this](https://github.com/keijiro/Funnel/tree/gllegacy#setting-up) page
 * doubleclick the file 'Funnel.unitypackage' to import it into unity
 * in unity find the Funnel C# script and drag&drop it onto the main camera
 * when you now run your screen should go black and you should see the text 'No cameras rendering'
@@ -126,8 +126,10 @@ note: here we create a new scene but you can also use an old project.
 
 ![syphon2](01syphon2.png?raw=true "syphon2")
 
-there are clients for processing, max, isadora etc. see <http://syphon.v002.info>
+there are clients for processing, max, isadora and many more. see <http://syphon.v002.info>
+
+you can also use it to record your scenes to disk. get [Syphon Recorder](http://syphon.v002.info/recorder/). don't forget to set the preferences (experiment with type of compression, framerate, dimensions etc) 
 
 and to send over network try <http://techlife.sg/TCPSyphon/>
 
-notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is using at the end of the chain, turn off preview if you can, use ethernet cables instead of wifi.
+notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is eventually using, turn off preview if you can and use 'Send Only' mode, connect with ethernet cables instead of wifi.
