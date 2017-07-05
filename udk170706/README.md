@@ -3,6 +3,81 @@ various
 
 questions and ideas that have come up.
 
+mesh distortion
+--
+
+an example of distorting or displacing mesh vertices.
+
+* start unity and create a new 3D project
+* select GameObject / 3D Objects / Sphere
+* scale it up to x:5, y:5, z:5 in the inspector
+* click 'Add Component' in the inspector and then 'New Script'
+* give the script a name (here 'deform') and make sure language is JavaScript
+* doubleclick the script symbol and paste in the code here below
+
+
+```javascript
+#pragma strict
+
+public var scalex = 0.7;
+public var scaley = 0.7;
+public var scalez = 0.7;
+public var distx = 2.0;
+public var disty = 2.0;
+public var distz = 2.0;
+public var speedx = 1.1;
+public var speedy = 1.2;
+public var speedz = 1.3;
+private var mesh : Mesh;
+private var baseVertices : Vector3[];
+
+function Start() {
+    mesh = GetComponent(MeshFilter).mesh;
+    baseVertices = mesh.vertices;
+}
+function Update() {
+    var vertices = new Vector3[baseVertices.Length];
+    for (var i= 0; i<vertices.Length; i++) {
+        var vertex = baseVertices[i];
+        vertex.x += Mathf.Sin((Time.time*speedx)+(vertex.x*distx))*scalex;
+        vertex.y += Mathf.Sin((Time.time*speedy)+(vertex.y*disty))*scaley;
+        vertex.z += Mathf.Sin((Time.time*speedz)+(vertex.z*distz))*scalez;
+        vertices[i] = vertex;
+    }
+    mesh.vertices= vertices;
+    mesh.RecalculateNormals();  //optional - can comment out if you don't care about light
+    mesh.RecalculateBounds();  //also optional - comment out to save cpu
+}
+```
+
+run and play around with the variables in the inspector. study the code and improve it. try attach this script to other models and prefabs.
+
+![deform](00deform.png?raw=true "deform")
+
+now let us add a texture coming from the built-in webcamera. 
+
+* select the sphere (or whatever objects your distort script above is attached to)
+* click 'Add Component' in the inspector and then 'New Script'
+* give the script a name (here 'webcam') and make sure language is JavaScript
+* doubleclick the script symbol and paste in the code here below
+
+```javascript
+#pragma strict
+
+function Start() {
+    var webcamTexture: WebCamTexture = new WebCamTexture();
+    var renderer: Renderer = GetComponent.<Renderer>();
+    renderer.material.mainTexture = webcamTexture;
+    webcamTexture.Play();
+    //GetComponent.<Renderer>().material.shader= Shader.Find("Mobile/Bumped Diffuse");
+    //GetComponent.<Renderer>().material.shader= Shader.Find("Unlit/Transparent");  //this one is good if you also turn off the light
+} 
+```
+
+when you click run your webcamera should start and you should see an image mapped onto the object moving around.
+
+again play around with the variables, try the suggested shaders, turn off the default directional light, try to set main camera clear flags to solid color or don't clear.   
+
 recording sound
 --
 
@@ -119,12 +194,12 @@ note: here we create a new scene but you can also use an old project.
 * select 'Edit / Project Settings / Player' and tick 'Run In Background'
 * optionally: in Main Camera inspector set screen width&height to 1920x1080 and Render Mode to 'Preview On Game View' 
 
-![syphon](00syphon.png?raw=true "syphon")
+![syphon](01syphon.png?raw=true "syphon")
 
 * go to <https://github.com/Syphon/Simple/releases/tag/version-3> and download Syphon Simple Apps 3
 * start 'Simple Client.app' and connect to your unity syphon server
 
-![syphon2](01syphon2.png?raw=true "syphon2")
+![syphon2](02syphon2.png?raw=true "syphon2")
 
 there are clients for processing, max, isadora and many more. see <http://syphon.v002.info>
 
@@ -133,3 +208,10 @@ you can also use it to record your scenes to disk. get [Syphon Recorder](http://
 and to send over network try <http://techlife.sg/TCPSyphon/>
 
 notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is eventually using, turn off preview if you can and use 'Send Only' mode, connect with ethernet cables instead of wifi.
+
+extra
+--
+
+terrain heightmaps from real world data <https://www.youtube.com/watch?v=-vyNbalvXR4&t=4s>
+
+advanced tutorials <http://catlikecoding.com/unity/tutorials/>
