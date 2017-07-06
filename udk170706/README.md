@@ -209,6 +209,8 @@ and to send over network try <http://techlife.sg/TCPSyphon/>
 
 notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is eventually using, turn off preview if you can and use 'Send Only' mode, connect with ethernet cables instead of wifi if you're sharing textures between computers.
 
+in this repository folder you will also find 'syphonmixer.maxpat' as well as openframeworks code (in folder 'src') that show how to build a simple 3 syphon server mixer. (for the openframeworks code press 'i' to set server and do the mixing)
+
 movie mask
 --
 
@@ -272,11 +274,44 @@ find 'Default-Material' in Plane's inspector and change the alpha cutoff slider.
 supercollider
 --
 
-advanced example demonstrating busses, effects, patterns.
+busses (here 50 and 52) can be used together with `In` and `Out` to route sound through effects. 
 
 ```supercollider
 s.boot;
 
+s.boot;
+
+(
+SynthDef(\efxVerb, {|in= 50, out= 0|
+    var src= In.ar(in, 2);  //read sound from channels/busses 50+51
+    var efx= FreeVerb.ar(src, 1, 0.9);
+    Out.ar(out, efx);  //send sound to channels/busses 0+1
+}).add;
+
+SynthDef(\efxDist, {|in= 52, out= 0|
+    var src= In.ar(in, 2);  //read sound from channels/busses 50+51
+    var efx= (src*70).tanh*0.3;
+    Out.ar(out, efx);  //send sound to channels/busses 0+1
+}).add;
+)
+
+//use headphones!
+a= Synth(\efxVerb);
+b= Synth(\efxDist);
+{SoundIn.ar.dup*MouseX.kr(0, 0.5)}.play(outbus: 50); //right side send to reverb
+{SoundIn.ar.dup*MouseY.kr(0, 0.5)}.play(outbus: 52);  //up send to dist
+//stop with cmd+.
+
+//here we play a simple sound out to different busses - dry, dist, verb, dry, dist, verb ... etc 
+a= Synth(\efxVerb);
+b= Synth(\efxDist);
+Pbind(\dur, 0.25, \degree, Pseq([0, 1, 2, 3, 4, 5], inf), \legato, 0.1, \out, Pseq([0, 52, 50], inf)).play
+//stop with cmd+.
+```
+
+advanced example demonstrating busses, effects, patterns.
+
+```supercollider
 (
 SynthDef(\verb, {|in, out, mix= 0.3, room= 0.5, damp= 0.5|
     Out.ar(out, FreeVerb.ar(In.ar(in, 2), mix, room, damp));
@@ -343,7 +378,7 @@ SynthDef(\echo, {|in, out, del= 0.667, dec= 4, sweep= 0.5|
 )
 //note the addToTail - this is needed for the In.ar to work
 ~echoSyn= Synth(\echo, [\in, ~echoBus, \out, 0], addAction:'addToTail');
-~echoSyn.set(\sweep, 5);
+~echoSyn.set(\sweep, 1);
 ~echoSyn.set(\sweep, 0.05);
 ~echoSyn.set(\sweep, 0.5);
 
