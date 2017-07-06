@@ -81,7 +81,7 @@ again play around with the variables, try the suggested shaders (uncomment one a
 recording sound
 --
 
-use the following script to record soundfiles from within unity. note: 16bit audio only.
+use the following script to record soundfiles from within unity. note: 16bit audio only. to use it make sure your scene make sound (for example the [sphere](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170629#sphere) example from last week)
 
 * attach this script to main camera
 * run and press 'r' to start/stop sound recording
