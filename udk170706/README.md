@@ -99,6 +99,7 @@ private var headerSize : int = 44;    //default for uncompressed wav
 private var fileStream : FileStream;
 private var listener : AudioListener;
 private var isRecording : boolean = false;
+private var written : boolean = false;
 
 function Start() {
     listener= gameObject.GetComponent(AudioListener);
@@ -113,7 +114,13 @@ function Update() {
             isRecording= false;
             WriteHeader();
             Debug.Log("done recording");
+            written= true;
         }
+    }
+}
+function OnApplicationQuit() {
+    if(!written) {
+        WriteHeader();
     }
 }
 function StartWriting(name : String) {
@@ -209,7 +216,8 @@ and to send over network try <http://techlife.sg/TCPSyphon/>
 
 notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is eventually using, turn off preview if you can and use 'Send Only' mode, connect with ethernet cables instead of wifi if you're sharing textures between computers.
 
-in this repository folder you will also find 'syphonmixer.maxpat' as well as openframeworks code (in folder 'src') that show how to build a simple 3 syphon server mixer. (for the openframeworks code press 'i' to set server and do the mixing)
+in this repository folder you will also find 'syphonmixer.maxpat' as well as openframeworks code (in folder 'src') that show how to build a simple 3 syphon server mixer.
+note that the maxpatch depends on the Syhpon package (install it from package manager), and the openframeworks (needs ofxSyphon and ofxGui) and when the application is running press 'i' to set server and do the mixing (a good idea would be to add osc control to the code).
 
 movie mask
 --
