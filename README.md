@@ -17,10 +17,10 @@ dates
 - [ ] 25may: **NO CLASS** (holiday)
 - [x] [01jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170601): characters + more osc
 - [x] [08jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170608): instantiation + patterns
-- [x] [15jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170615): textures
-- [x] [22jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170622): samples
-- [x] [29jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170629): panning
-- [ ] [06jul 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706): various
+- [x] [15jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170615): textures (ndef spawn)
+- [x] [22jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170622): samples (sonogram, open raw)
+- [x] [29jun 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170629): panning (multichannel)
+- [ ] [06jul 14-16](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706): various (mesh, syphon)
 - [ ] 13jul 14-16
 
 links to previous semesters... <http://redfrik.github.io/udk00-Audiovisual_Programming/>

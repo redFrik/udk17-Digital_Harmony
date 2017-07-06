@@ -56,7 +56,7 @@ run and play around with the variables in the inspector. study the code and impr
 
 now let us add a texture coming from the built-in webcamera. 
 
-* select the sphere (or whatever objects your distort script above is attached to)
+* select the sphere (or whatever objects your deform script above is attached to)
 * click 'Add Component' in the inspector and then 'New Script'
 * give the script a name (here 'webcam') and make sure language is JavaScript
 * doubleclick the script symbol and paste in the code here below
@@ -76,7 +76,7 @@ function Start() {
 
 when you click run your webcamera should start and you should see an image mapped onto the object moving around.
 
-again play around with the variables, try the suggested shaders, turn off the default directional light, try to set main camera clear flags to solid color or don't clear.   
+again play around with the variables, try the suggested shaders (uncomment one at a time in the code), turn off the default directional light, try to set main camera clear flags to solid color or don't clear.   
 
 recording sound
 --
@@ -207,7 +207,68 @@ you can also use it to record your scenes to disk. get [Syphon Recorder](http://
 
 and to send over network try <http://techlife.sg/TCPSyphon/>
 
-notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is eventually using, turn off preview if you can and use 'Send Only' mode, connect with ethernet cables instead of wifi.
+notes on optimisation: try to keep the resolution down, don't send more pixels than your video projector is eventually using, turn off preview if you can and use 'Send Only' mode, connect with ethernet cables instead of wifi if you're sharing textures between computers.
+
+movie mask
+--
+
+* start unity and create a new 3D project
+* select GameObject / 3D Object / Plane
+* set the rotation to x: -90, y: 0, z: 0
+* and set scale to x: -0.4, y: 1, z: -0.3 (this is for a 4:3 ratio movie, use x: -0.48, z: -0.27 for 16:9 etc)
+* click 'Add Component' in the inspector and then 'New Script'
+* give the script a name (here 'moviemask') and make sure language is JavaScript
+* doubleclick the script symbol and paste in the code here below
+
+```javascript
+#pragma strict
+
+function Start() {
+    var player= gameObject.AddComponent.<UnityEngine.Video.VideoPlayer>();
+    player.url= "/Users/asdf/Desktop/bbb.mp4";  //edit path to your movie file
+    player.isLooping= true;
+    //GetComponent.<Renderer>().material.shader= Shader.Find("MaskedTexture");
+    //GetComponent.<Renderer>().material.SetTexture("_Mask", Resources.Load("mymask", Texture));
+}
+```
+
+when you click run you should see your movie file on the plane object. if not double check the url in the code.
+
+* select Assets / Create / Shader / Unlit Shader
+* call the shader 'MaskedTexture' and double click its icon
+* paste in the code below...
+
+```
+//from http://wiki.unity3d.com/index.php?title=Texture_Mask
+
+Shader "MaskedTexture" {
+    Properties {
+        _MainTex ("Base (RGB)", 2D) = "white" {}
+        _Mask ("Culling Mask", 2D) = "white" {}
+        _Cutoff ("Alpha cutoff", Range (0,1)) = 0.1
+    }
+    SubShader {
+        Tags {"Queue"="Transparent"}
+        Lighting Off
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
+        AlphaTest GEqual [_Cutoff]
+        Pass {
+            SetTexture [_Mask] {combine texture}
+            SetTexture [_MainTex] {combine texture, previous}
+        }
+    }
+}
+```
+
+* uncomment the two `GetComponent` lines in the javascript above and save
+* download this png file <https://github.com/redFrik/udk17-Digital_Harmony/raw/master/udk170706/mymask.png?raw=true>
+* in unity create a folder in Assets called Resources
+* drag&drop the mymask.png file into Resources
+
+now when you run you should see the video as a rounded shape.
+
+find 'Default-Material' in Plane's inspector and try changing the alpha cutoff slider. create your own masks (greyscale with black as transparent alpha channel) and load them. play around with the plain position and scaling.
 
 extra
 --
