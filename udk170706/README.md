@@ -236,11 +236,10 @@ when you click run you should see your movie file on the plane object. if not do
 
 * select Assets / Create / Shader / Unlit Shader
 * call the shader 'MaskedTexture' and double click its icon
-* paste in the code below...
+* delete what is there and instead paste in the following shader code...
 
 ```
 //from http://wiki.unity3d.com/index.php?title=Texture_Mask
-
 Shader "MaskedTexture" {
     Properties {
         _MainTex ("Base (RGB)", 2D) = "white" {}
@@ -262,13 +261,97 @@ Shader "MaskedTexture" {
 ```
 
 * uncomment the two `GetComponent` lines in the javascript above and save
-* download this png file <https://github.com/redFrik/udk17-Digital_Harmony/raw/master/udk170706/mymask.png?raw=true>
+* download this png file <https://github.com/redFrik/udk17-Digital_Harmony/raw/master/udk170706/mymask.png?raw=true> (note: it might look all white, but it's there. on mac alt+click the link to download)
 * in unity create a folder in Assets called Resources
 * drag&drop the mymask.png file into Resources
 
 now when you run you should see the video as a rounded shape.
 
-find 'Default-Material' in Plane's inspector and try changing the alpha cutoff slider. create your own masks (greyscale with black as transparent alpha channel) and load them. play around with the plain position and scaling.
+find 'Default-Material' in Plane's inspector and change the alpha cutoff slider. create your own masks in some image editing software (greyscale with black as transparent alpha channel) and load them. play around more with the Plane position and scaling, try with solid color instead of skybox.
+
+supercollider
+--
+
+advanced example demonstrating busses, effects, patterns.
+
+```supercollider
+s.boot;
+
+(
+SynthDef(\verb, {|in, out, mix= 0.3, room= 0.5, damp= 0.5|
+    Out.ar(out, FreeVerb.ar(In.ar(in, 2), mix, room, damp));
+}).add;
+SynthDef(\echo, {|in, out, del= 0.667, dec= 4|
+    Out.ar(out, AllpassN.ar(In.ar(in, 2), 4, del.clip(0, 4), dec));
+}).add;
+SynthDef(\ping, {|out, atk= 0.001, rel= 0.1, amp= 0.3, freq= 400, mod= 8, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp), doneAction:2);
+    var snd= SinOscFB.ar(freq, (env*mod).clip(0, 1), env);
+    Out.ar(out, Pan2.ar(snd, pan));
+}).add;
+)
+~verbBus= Bus.audio(s, 2);
+~echoBus= Bus.audio(s, 2);
+~verbSyn= Synth(\verb, [\in, ~verbBus, \out, 0]);
+~echoSyn= Synth(\echo, [\in, ~echoBus, \out, 0]);
+Pdef(\ping1, Pbind(\instrument, \ping, \out, Pseq([0, ~verbBus], inf), \freq, Pseq([400, 200, 100, 300], inf), \mod, Pseq([0, 4, 8, 16, 32], inf), \dur, Pstutter(8, Pseq([1, 0.5, 0.25], inf)))).play
+Pdef(\ping2, Pbind(\instrument, \ping, \out, Pseq([0, ~verbBus, ~echoBus], inf), \freq, Pseq([500, 600], inf), \mod, Pseq([0, 4, 8, 16, 32], inf), \dur, Pstutter(6, Pseq([1, 0.5, 0.25], inf)))).play
+~verbSyn.set(\mix, 0.8, \room, 0.8, \damp, 0.15)
+~verbSyn.set(\mix, 0.8, \room, 0.1, \damp, 0.5)
+~verbSyn.set(\mix, 0.99, \room, 0.01, \damp, 0.1)
+~verbSyn.set(\mix, 0.1, \room, 0.9, \damp, 0.9)
+~echoSyn.set(\dec, 8, \del, 0.125)
+~echoSyn.set(\dec, 6, \del, 0.25)
+~echoSyn.set(\dec, 2, \del, 0.125)
+~echoSyn.set(\dec, 15, \del, 4/3)
+Pdef(\ping3, Pbind(\instrument, \ping, \out, Pseq([0, ~verbBus, ~echoBus, 0], inf), \rel, Pseq([0.1, 0.2, 0.3], inf), \freq, Pseq([700, 800, 900], inf), \mod, Pseq([0, 4, 8, 16, 32], inf), \dur, Pstutter(4, Pseq([1, 0.5, 0.25], inf)), \amp, 0.05)).play
+Pdef(\ping4, Pbind(\instrument, \ping, \out, Pseq([0, ~verbBus, ~echoBus, 0, 0], inf), \rel, Pseq([0.7, 0.1], inf), \freq, Pseq([1000, 1100, 1400], inf), \mod, Pseq([0, 4, 8, 16, 32], inf), \dur, Pstutter(2, Pseq([1, 0.5, 0.25], inf)), \amp, 0.03)).play
+Pdef(\ping5, Pbind(\instrument, \ping, \out, Pseq([0, ~verbBus, ~echoBus, 0, 0, 0], inf), \rel, Pseq([0.4, 0.01], inf), \freq, Pseq([1500, 1500, 1800], inf), \mod, Pseq([0, 4, 8, 16, 32], inf), \dur, Pstutter(1, Pseq([1, 0.5, 0.25], inf)), \amp, 0.01, \pan, Pseq([-0.75, 0, 0.75], inf))).play
+Pdef(\ping0, Pbind(\instrument, \ping, \out, Pseq([~echoBus], inf), \rel, 0.01, \freq, Pseq([50, 100], inf), \dur, Pseq([1, 1, 1, 0.5, 0.5], inf), \amp, 0.6)).play
+
+//change the synthdef while the above is running
+(
+SynthDef(\ping, {|out, atk= 0.001, rel= 0.1, amp= 0.3, freq= 400, mod= 8, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp, -2), doneAction:2);
+    var snd= Mix(SinOsc.ar(freq*([0.5, 0.75, 1, 1.25]+env), env*mod*2pi, env)).tanh;
+    Out.ar(out, Pan2.ar(snd, pan));
+}).add;
+)
+
+(
+SynthDef(\ping, {|out, atk= 0.001, rel= 0.1, amp= 0.3, freq= 400, mod= 8, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp, -2), doneAction:2);
+    var snd= Mix(VarSaw.ar(freq*([0.5, 0.75, 1, 1.25]+env), 0, 1-(env*mod).clip(0, 1), env));
+    Out.ar(out, Pan2.ar(snd, pan));
+}).add;
+)
+
+(
+SynthDef(\ping, {|out, atk= 0.001, rel= 0.1, amp= 0.3, freq= 400, mod= 8, pan= 0|
+    var env= EnvGen.ar(Env.perc(atk, rel, amp, -2), doneAction:2);
+    var snd= Mix(SinOsc.ar(0, SinOsc.ar(freq, 0, mod*pi)*pi, env.lag(0.01))+VarSaw.ar(freq*([0.5, 0.75, 1, 1.25]+env), 0, 1-(env*mod).clip(0, 1), env));
+    Out.ar(out, Pan2.ar(snd, pan));
+}).add;
+)
+
+//to change one of the effects we need to free (release) the synth and start it again
+(
+~echoSyn.release;
+SynthDef(\echo, {|in, out, del= 0.667, dec= 4, sweep= 0.5|
+    Out.ar(out, AllpassC.ar(In.ar(in, 2), 4, (del*LFTri.ar(sweep, 0, 1, 2)).clip(0, 4), dec));
+}).add;
+)
+//note the addToTail - this is needed for the In.ar to work
+~echoSyn= Synth(\echo, [\in, ~echoBus, \out, 0], addAction:'addToTail');
+~echoSyn.set(\sweep, 5);
+~echoSyn.set(\sweep, 0.05);
+~echoSyn.set(\sweep, 0.5);
+
+//to see the order of currently running synts
+s.plotTree;
+
+//read the 'Order of execution' helpfile
+```
 
 extra
 --
