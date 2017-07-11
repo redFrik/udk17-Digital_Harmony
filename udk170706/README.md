@@ -287,8 +287,6 @@ busses (here 50 and 52) can be used together with `In` and `Out` to route sound 
 ```supercollider
 s.boot;
 
-s.boot;
-
 (
 SynthDef(\efxVerb, {|in= 50, out= 0|
     var src= In.ar(in, 2);  //read sound from channels/busses 50+51
@@ -304,17 +302,23 @@ SynthDef(\efxDist, {|in= 52, out= 0|
 )
 
 //use headphones!
-a= Synth(\efxVerb);
-b= Synth(\efxDist);
+Synth(\efxVerb);
+Synth(\efxDist);
 {SoundIn.ar.dup*MouseX.kr(0, 0.5)}.play(outbus: 50); //right side send to reverb
 {SoundIn.ar.dup*MouseY.kr(0, 0.5)}.play(outbus: 52);  //up send to dist
 //stop with cmd+.
 
 //here we play a simple sound out to different busses - dry, dist, verb, dry, dist, verb ... etc 
-a= Synth(\efxVerb);
-b= Synth(\efxDist);
+Synth(\efxVerb);
+Synth(\efxDist);
 Pbind(\dur, 0.25, \degree, Pseq([0, 1, 2, 3, 4, 5], inf), \legato, 0.1, \out, Pseq([0, 52, 50], inf)).play
 //stop with cmd+.
+
+//note that the order of things are important here. always start the effects first.
+//read the 'Order of execution' helpfile
+
+//to see the order of currently running synts
+s.plotTree;
 ```
 
 advanced example demonstrating busses, effects, patterns.
@@ -389,11 +393,6 @@ SynthDef(\echo, {|in, out, del= 0.667, dec= 4, sweep= 0.5|
 ~echoSyn.set(\sweep, 1);
 ~echoSyn.set(\sweep, 0.05);
 ~echoSyn.set(\sweep, 0.5);
-
-//to see the order of currently running synts
-s.plotTree;
-
-//read the 'Order of execution' helpfile
 ```
 
 extra
