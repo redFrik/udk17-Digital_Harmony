@@ -96,6 +96,8 @@ now in the Main Camera inspector you should see some parameters to control. play
 
 ![mask](00mask.png?raw=true "mask")
 
+this script can also be used as a main fader for your live visuals. by setting posx, posy, sizex and sizey to 0.0 and then only controlling the fade parameter, you can bring in and out your graphics to/from black in a nice way. perhaps set up midi or osc receiver code to control this fade parameter from a midi controller or from your supercollider sound patch (by adapting the code [here](https://github.com/redFrik/udk16-Immersive_Technologies/tree/master/udk170112#midi-input) or [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170511#sc-to-unity))
+
 fullscreen
 --
 
@@ -132,9 +134,24 @@ function Start() {
 
 ![playersettings](01playersettings.png?raw=true "playersettings")
 
-NOTE: at least on mac osx this will now only work every second time you run the app (weird bug). to get around that open Terminal and type `/Users/asdf/unity/2nd_screen/2nd.app/Contents/MacOS/2nd -screen-height 900 -screen-width 1440` but adapt the path and app name to match your system (i.e. where you saved your app when you built it)
+NOTE: at least on mac osx this will now only work every second time you run the app (weird bug). to get around that open Terminal and type `/Users/asdf/unity/2nd_screen/2nd.app/Contents/MacOS/2nd -screen-height 900 -screen-width 1440` but adapt the path and app name to match your system (i.e. where you saved your app when you built it). quit with ctrl+c
 
 NOTE: all the above is kind of a hack and temporary solution in current unity (5.6). hopefully in the future unity will have better multi-display support. see discussion [here](https://stackoverflow.com/questions/43066541/unity-multiple-displays-not-working)
+
+syphon multi display
+--
+
+NOTE: this section is for ***mac osx*** only. for windows there is a similar texture sending application here... <http://spout.zeal.co> that should be able to do something similar.
+
+because unity have big problems with multi-display setups, one can use syphon and some simple max patches (or openframeworks, madmapper, processing or whatever) to deal with the window management.
+
+in this directory you will find four max patches that help run your unity scenes with 2-3 projectors. if you don't have max they should run in the demo version of [max](http://cycling74.com/downloads). you will need to install the Syphon package in max's package manager.
+
+syphonmulti2 and syphonmulti3 takes two or three syphon inputs and display them on as many projectors/displays. so with this you can for example have three cameras looking in your scene, project them next to each other and get kind of three separate views of the same object. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. set the resolution to 1920x1080, and importantly tick run in background. run and then open the max patch (syphonmulti2 for two cameras + two projectors, syphonmulti3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
+
+syphonwide2 and syphonwide3 takes a single syphon input and spreads it over two or three projectors. so with this you can for example have a unity camera/scene that fills a whole room, projecting on three walls. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. for two projectors set the funnel resolution to 3840x1080 and for three projectors use 5760x1080 (so we will be sending very wide textures from unity). next tick run in background, open the max patch (syphonwide2 for two projectors, syphonwide3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
+
+NOTE: the above might be running slow on your computer (specially the multi camera patches). watch the framerate and set the funnel script to 'Send Only'. it's not an optimal solution but might work in some cases (until unity is updated and the multi display problems are solved).
 
 extra
 --

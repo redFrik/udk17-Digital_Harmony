@@ -38,12 +38,56 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-71",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 659.875671, 522.0, 121.0, 22.0 ],
+					"style" : "",
+					"text" : "prepend servername"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-72",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 394.875671, 522.0, 121.0, 22.0 ],
+					"style" : "",
+					"text" : "prepend servername"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"fontname" : "Arial",
+					"fontsize" : 12.0,
+					"id" : "obj-73",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 129.875671, 522.0, 121.0, 22.0 ],
+					"style" : "",
+					"text" : "prepend servername"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-70",
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 295.875671, 247.0, 300.0, 20.0 ],
-					"presentation_rect" : [ 300.0, 248.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "doubleclick to edit blending - simple additive by default"
 				}
@@ -55,9 +99,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 649.875671, 443.0, 136.0, 20.0 ],
+					"patching_rect" : [ 701.875671, 443.0, 79.0, 20.0 ],
 					"style" : "",
-					"text" : "select serve+app below"
+					"text" : "select server"
 				}
 
 			}
@@ -67,10 +111,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 382.875671, 443.0, 136.0, 20.0 ],
-					"presentation_rect" : [ 382.875671, 443.0, 0.0, 0.0 ],
+					"patching_rect" : [ 434.875671, 443.0, 79.0, 20.0 ],
 					"style" : "",
-					"text" : "select serve+app below"
+					"text" : "select server"
 				}
 
 			}
@@ -80,10 +123,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 115.875671, 443.0, 136.0, 20.0 ],
-					"presentation_rect" : [ 131.875671, 442.0, 0.0, 0.0 ],
+					"patching_rect" : [ 167.875671, 443.0, 79.0, 20.0 ],
 					"style" : "",
-					"text" : "select serve+app below"
+					"text" : "select server"
 				}
 
 			}
@@ -106,7 +148,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 318.875671, 385.0, 203.0, 20.0 ],
-					"presentation_rect" : [ 316.875671, 387.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "click to update list of syphon servers"
 				}
@@ -119,7 +160,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 52.875664, 385.0, 203.0, 20.0 ],
-					"presentation_rect" : [ 55.0, 388.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "click to update list of syphon servers"
 				}
@@ -132,7 +172,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 303.375671, 6.703369, 157.0, 20.0 ],
-					"presentation_rect" : [ 294.875671, 2.65564, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "mix the three video sources"
 				}
@@ -145,7 +184,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 39.875664, 258.65564, 193.0, 20.0 ],
-					"presentation_rect" : [ 41.875664, 260.703369, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "press 'esc' key to toggle fullscreen"
 				}
@@ -158,7 +196,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 39.875664, 6.703369, 60.0, 20.0 ],
-					"presentation_rect" : [ 37.0, 9.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "start/stop"
 				}
@@ -1573,6 +1610,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-73", 0 ],
+					"source" : [ "obj-25", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-29", 0 ],
 					"source" : [ "obj-27", 0 ]
 				}
@@ -1603,6 +1647,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-32", 0 ],
 					"source" : [ "obj-31", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-72", 0 ],
+					"source" : [ "obj-32", 1 ]
 				}
 
 			}
@@ -1754,6 +1805,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-71", 0 ],
+					"source" : [ "obj-51", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-62", 0 ],
 					"source" : [ "obj-52", 0 ]
 				}
@@ -1880,6 +1938,27 @@
 				"patchline" : 				{
 					"destination" : [ "obj-3", 0 ],
 					"source" : [ "obj-7", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-62", 0 ],
+					"source" : [ "obj-71", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-47", 0 ],
+					"source" : [ "obj-72", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-73", 0 ]
 				}
 
 			}
