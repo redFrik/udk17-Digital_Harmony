@@ -158,42 +158,53 @@ supercollider
 
 more on patterns (advanced)
 
-read sc helpfiles for `Pseq`, `Prand`, `Pwrand`, `Pseg` etc.
+read sc helpfiles for `Pseq`, `Prand`, `Pwrand`, `Pseg`, `Pstutter` etc.
 
-```
+```supercollider
 s.boot;
 
 (
-SynthDef(\pong, {|out= 0, freq= 400, pan= 0, amp= 0.5, mod= 0.5, atk= 0.005, rel= 0.1, cur= -4, gate= 1|
+SynthDef(\pong, {|out= 0, freq= 400, pan= 0, amp= 0.5, mod= 0.1, atk= 0.005, rel= 0.1, cur= -4, gate= 1|
     var env= EnvGen.ar(Env.asr(atk, amp, rel, cur), gate, doneAction:2);
-    var snd= SinOsc.ar(freq-env, env+mod*2pi, 3**mod).tanh;
+    var snd= SinOscFB.ar(freq-env, mod, 2**mod).tanh;
     Out.ar(out, Pan2.ar(snd, pan, env));
 }).add;
 )
 
 //run these one at a time - look at the code what is added each time
 Pdef(\pong, Pbind(\instrument, \pong, \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \dur, 0.25, \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \degree, Pseq([0, 1, 3, 4], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([6, 6, 6], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-Pdef(\pong, Pbind(\instrument, \pong, \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
-
+Pdef(\pong, Pbind(\instrument, \pong, \dur, 0.25,   \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \dur, Pseq([0.25, 0.125, 0.25], inf),   \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \degree, Pseq([0, 1, 3, 4], inf), \pan, Pwhite(-0.6, 0.6, inf),   \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \degree, Pseq([0, 1, 3, 4, 5], inf),   \pan, Pwhite(-0.6, 0.6, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \octave, Pseq([5, 5, 5, 6], inf),   \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.6, 0.6, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([6, 6, 6], inf)),   \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.6, 0.6, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \cur, Pseq([-5, -5, 5], inf),   \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.6, 0.6, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \scale, Scale.lydian(Tuning.just),   \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \mtranspose, Pstutter(32, Pseq([0, 1], inf)),   \scale, Scale.lydian(Tuning.just), \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
 (
 SynthDef(\dist, {|in= 50, out= 0, freq= 500, amount= 25, detune= 1, mix= 1|  //mix is -1 (dry) to 1 (wet)
-    var snd= In.ar(in, 2);
-    var efx= (snd*amount).tanh*SinOsc.ar(freq+[0, detune], 1, 2/amount);
-    Out.ar(out, XFade2.ar(snd, efx, mix));
+var snd= In.ar(in, 2);
+var efx= (snd*amount).tanh*SinOsc.ar(freq+[0, detune], 1, 2/amount);
+Out.ar(out, XFade2.ar(snd, efx, mix));
 }).add;
 )
 e.free; e= Synth(\dist);
 
-Pdef(\pong, Pbind(\instrument, \pong, \out, Pwrand([0, 50], [0.9, 0.1], inf), \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \out, Pwrand([0, 50], [0.9, 0.1], inf),   \mtranspose, Pstutter(32, Pseq([0, 1], inf)), \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
 
-Pdef(\pong, Pbind(\instrument, \pong, \amp, Prand([0.075, 0.05, 0], inf), \rel, Pseq([2.5, 1.5, 1], inf), \out, Pwrand([0, 50], [0.9, 0.1], inf), \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+(
+SynthDef(\verb, {|in= 52, out= 0, room= 0.75, mix= 0.75|  //mix is -1 (dry) to 1 (wet)
+var snd= In.ar(in, 2);
+var efx= FreeVerb2.ar(snd[0], snd[1], mix+1*0.5, room);
+Out.ar(out, efx);
+}).add;
+)
+f.free; f= Synth(\verb);
+
+Pdef(\pong, Pbind(\instrument, \pong, \out, Pseq([0!8, 50, 0!3, 51].flat, inf),   \mtranspose, Pstutter(32, Pseq([0, 1], inf)), \scale, Scale.lydian(Tuning.just), \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+
+Pdef(\pong, Pbind(\instrument, \pong, \amp, Pseq([0, Pwhite(0, 0.05, 1)], inf), \rel, Pseq([2.5, 1.5], inf),   \out, Pseq([0!8, 50, 0!3, 51].flat, inf), \mtranspose, Pstutter(32, Pseq([0, 1], inf)), \scale, Scale.lydian(Tuning.just), \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
 
 Pdef(\pong).stop;
 ```
