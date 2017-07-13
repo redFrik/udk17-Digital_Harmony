@@ -209,6 +209,23 @@ Pdef(\pong, Pbind(\instrument, \pong, \amp, Pseq([0, Pwhite(0, 0.05, 1)], inf), 
 Pdef(\pong).stop;
 ```
 
+projectors
+--
+
+on recent mac laptops one can easily connect and output graphics to three projectors at the same time. i use one hdmi output and two thunderbolt-to-hdmi adapters for my mid-2015 machine. 
+
+when you connect all three you should see this in your System Preferences / Displays  
+
+![systempref](02systempref.png?raw=true "systempref")
+
+things to check with beamers...
+
+* never turn off the power to the projector without letting it cool off (wait for the fan to stop spinning)
+* lamp setting (sometimes you want eco mode to save the lamp - sometimes not)
+* keystone
+* colour profile
+* turn off screensavers, nightshift, f.lux, notifications etc in your system - things that can pop up during performance 
+
 extra
 --
 
