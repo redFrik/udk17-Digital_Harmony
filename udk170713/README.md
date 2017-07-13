@@ -184,9 +184,9 @@ Pdef(\pong, Pbind(\instrument, \pong, \scale, Scale.lydian(Tuning.just),   \cur,
 Pdef(\pong, Pbind(\instrument, \pong, \mtranspose, Pstutter(32, Pseq([0, 1], inf)),   \scale, Scale.lydian(Tuning.just), \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
 (
 SynthDef(\dist, {|in= 50, out= 0, freq= 500, amount= 25, detune= 1, mix= 1|  //mix is -1 (dry) to 1 (wet)
-var snd= In.ar(in, 2);
-var efx= (snd*amount).tanh*SinOsc.ar(freq+[0, detune], 1, 2/amount);
-Out.ar(out, XFade2.ar(snd, efx, mix));
+    var snd= In.ar(in, 2);
+    var efx= (snd*amount).tanh*SinOsc.ar(freq+[0, detune], 1, 2/amount);
+    Out.ar(out, XFade2.ar(snd, efx, mix));
 }).add;
 )
 e.free; e= Synth(\dist);
@@ -195,9 +195,9 @@ Pdef(\pong, Pbind(\instrument, \pong, \out, Pwrand([0, 50], [0.9, 0.1], inf),   
 
 (
 SynthDef(\verb, {|in= 52, out= 0, room= 0.75, mix= 0.75|  //mix is -1 (dry) to 1 (wet)
-var snd= In.ar(in, 2);
-var efx= FreeVerb2.ar(snd[0], snd[1], mix+1*0.5, room);
-Out.ar(out, efx);
+    var snd= In.ar(in, 2);
+    var efx= FreeVerb2.ar(snd[0], snd[1], mix+1*0.5, room);
+    Out.ar(out, efx);
 }).add;
 )
 f.free; f= Synth(\verb);
@@ -207,16 +207,77 @@ Pdef(\pong, Pbind(\instrument, \pong, \out, Pseq([0!8, 50, 0!3, 51].flat, inf), 
 Pdef(\pong, Pbind(\instrument, \pong, \amp, Pseq([0, Pwhite(0, 0.05, 1)], inf), \rel, Pseq([2.5, 1.5], inf),   \out, Pseq([0!8, 50, 0!3, 51].flat, inf), \mtranspose, Pstutter(32, Pseq([0, 1], inf)), \scale, Scale.lydian(Tuning.just), \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
 
 Pdef(\pong).stop;
+```
 
+patterns can be nested. compare...
 
-b= Buffer.readChannel(s, "/Users/asdf/Desktop/musicradar-nu-disco-samples/125bpm Loops n Lines/Kit Breaks/ND_BreakC125-05.wav", channels:[0]);
+```supercollider
+//compare...
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, Pseq([0.5, 0.25, 0.25, 0.25, 0.125], inf), \legato, 0.3, \degree, Pseq([0, 0, 7, 6, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, Pseq([0.5, Pseq([0.25], 3), 0.125], inf), \legato, 0.3, \degree, Pseq([0, 0, 7, 6, 5, 4, 3, 2, 1], inf))).play;
+//they should be the same but the second line uses a nested pattern that repeat the value 0.25 three times 
+
+//but now you can do...
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, Pseq([0.5, Prand([0.125, 0.0625], 5), 0.125], inf), \legato, 0.3, \degree, Pseq([0, 0, 7, 6, 5, 4, 3, 2, 1], inf))).play;
+//or...
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, Pseq([0.5, Prand([Pseq([0.125], 3), 0.0625], 5), 0.125], inf), \legato, 0.3, \degree, Pseq([0, 0, 7, 6, 5, 4, 3, 2, 1], inf))).play;
+//for three levels deep nesting
+```
+
+also math operations are possible directly on patterns. you can add or multiply with a single float or even with other patterns.
+
+```supercollider
+Pdef(\myseq, Pbind(\instrument, \pong, \amp, Pseq([0, 0.5, 0.25, 0.25, 0.25, 0.25, 0.25], inf)*0.5, \dur, Pseq([0.5, 0.25, 0.25, 0.25, 0.125], inf), \legato, 0.3, \degree, Pseq([0, 0, 7, 6, 5, 4, 3, 2, 1], inf)+5)).play;
+
+Pdef(\myseq, Pbind(\instrument, \pong, \amp, Pseq([0, 0.5, 0.25, 0.25, 0.25, 0.25, 0.25], inf)*0.5, \dur, Pseq([0.5, 0.25, 0.25, 0.25, 0.125], inf), \legato, 0.3, \degree, Pseq([0, 0, 7, 6, 5, 4, 3, 2, 1], inf)+Pseq([-7, 0], inf))).play;
+```
+
+we do not need to use the simple pong sound, but can also load a soundfile and play that as our instrument. note that there's no freq argument any more so degree, scale, octave will not work (unless you use freq for filter settings or connect freq to rate (playbackrate) somehow). but most parameters will work like dur, legato, amp, mod, pan, atk, rel etc. 
+
+```supercollider
+b= Buffer.readChannel(s, "/Users/asdf/Desktop/ND_BreakC125-05.wav", channels:[0]);
 (
-SynthDef(\sampler, {|out= 0, pan= 0, buf, amp= 0.5, rate= 1, atk= 0.005, rel= 0.1, cur= -4, gate= 1|
-var env= EnvGen.ar(Env.asr(atk, amp, rel, cur), gate, doneAction:2);
-var snd= PlayBuf.ar(1, buf, rate);
-Out.ar(out, Pan2.ar(snd, pan, env));
+SynthDef(\sampler, {|out= 0, pan= 0, buf, mod= 0, amp= 0.5, rate= 1, atk= 0.005, rel= 0.1, cur= -4, gate= 1|
+    var env= EnvGen.ar(Env.asr(atk, amp, rel, cur), gate, doneAction:2);
+    var snd= PlayBuf.ar(1, buf, rate, Impulse.ar(mod*50));  //Impulse could be Dust
+    Out.ar(out, Pan2.ar(snd, pan, env));
 }).add;
 )
+
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, 0.5, \amp, 0.2)).play;
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, Pseq([Pseq([0.1], 10), Pseries(0.1, -0.002, 40)], inf), \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \mod, Pseq([0, 0, 0.1, 1], inf), \dur, Pseq([Pseq([0.1], 10), Pseries(0.1, -0.002, 40)], inf), \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, 0.1, \rate, Pwrand([0, 5, 4, 3, 2, 1], [0.05, 0.15, 0.1, 0.5, 0.1, 0.1], inf)+1)).play;
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, 0.1, \legato, 1.5, \rel, 0.5, \pan, Pwhite(-1.0, 1.0), \rate, Pwrand([0, 5, 4, 3, 2, 1], [0.05, 0.15, 0.1, 0.5, 0.1, 0.1], inf)+1)).play;
+```
+
+question: how to change individual patterns while it is running and how to add a gui slider?
+
+```supercollider
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, Pdefn(\mydur, 0.1), \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdefn(\mydur, 0.05);
+Pdefn(\mydur, Pseq([0.01, 0.1], inf));
+Pdefn(\mydur, Pseq([0.01, 0.1, 0.05, 0.2], inf));
+(
+var w= Window().front;
+Slider(w).action_({|v| Pdefn(\mydur, v.value.linlin(0, 1, 0.01, 0.2))});
+CmdPeriod.doOnce({w.close});
+)
+```
+
+question: how to write your own patterns functions similar to ugens? one way is to use `Pfunc` like this...
+
+```supercollider
+Pdef(\myseq, Pbind(\instrument, \pong, \cnt, Pseries(0, 1), \dur, Pfunc({|ev| sin(ev.cnt*0.15)*0.1+0.125}), \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+```
+
+or one can install additional patterns that are similar to the built in ugens...
+
+```supercollider
+Quarks.install("UGenPatterns");  //after installing you will need to recompile and start again
+Pdef(\myseq1, Pbind(\instrument, \pong, \dur, PSinOsc(40)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq1, Pbind(\instrument, \pong, \dur, PSaw(40)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq1, Pbind(\instrument, \pong, \dur, PPulse(10, 0.25)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
 ```
 
 projectors
@@ -228,14 +289,14 @@ when you connect all three you should see this in your System Preferences / Disp
 
 ![systempref](02systempref.png?raw=true "systempref")
 
-things to check with beamers...
+things to check with projectors...
 
 * never turn off the power to the projector without letting it cool off (wait for the fan to stop spinning)
 * lamp setting (sometimes you want eco mode to save the lamp - sometimes not)
 * keystone
 * colour profile
 * turn off screensavers, nightshift, f.lux, notifications etc in your system and other things that can pop up during performance 
-* bring small wooden sticks to adjust the projector
+* bring small wooden sticks to put under the feet to adjust the projector
 
 extra
 --
@@ -253,3 +314,5 @@ supercollider code sharing site <http://sccode.org>
 supercollider wiki <http://supercollider.github.io/pages>
 
 supercollider mailing list <http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx>
+
+pattern guide <http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html>
