@@ -143,19 +143,74 @@ syphon multi display
 
 NOTE: this section is for ***mac osx*** only. for windows there is a similar texture sending application here... <http://spout.zeal.co> that should be able to do something similar.
 
-because unity have big problems with multi-display setups, one can use syphon and some simple max patches (or openframeworks, madmapper, processing or whatever) to deal with the window management.
+because unity have big problems with multi-display setups, one can use syphon and these simple max patches to deal with the window management. in this directory you will find four max patches that help run your unity scenes with 2-3 projectors. if you don't have max they should run in the demo version of [max](http://cycling74.com/downloads). you will need to install the Syphon package in max's package manager.
 
-in this directory you will find four max patches that help run your unity scenes with 2-3 projectors. if you don't have max they should run in the demo version of [max](http://cycling74.com/downloads). you will need to install the Syphon package in max's package manager.
+**syphonmulti2.maxpat** and **syphonmulti3.maxpat** takes two or three syphon inputs and display them on as many projectors/displays. so with this you can for example have three cameras looking in your scene, project them next to each other and get kind of three separate views of the same object. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. set the resolution to 1920x1080, and importantly tick run in background. run and then open the max patch (syphonmulti2 for two cameras + two projectors, syphonmulti3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
 
-syphonmulti2 and syphonmulti3 takes two or three syphon inputs and display them on as many projectors/displays. so with this you can for example have three cameras looking in your scene, project them next to each other and get kind of three separate views of the same object. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. set the resolution to 1920x1080, and importantly tick run in background. run and then open the max patch (syphonmulti2 for two cameras + two projectors, syphonmulti3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
-
-syphonwide2 and syphonwide3 takes a single syphon input and spreads it over two or three projectors. so with this you can for example have a unity camera/scene that fills a whole room, projecting on three walls. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. for two projectors set the funnel resolution to 3840x1080 and for three projectors use 5760x1080 (so we will be sending very wide textures from unity). next tick run in background, open the max patch (syphonwide2 for two projectors, syphonwide3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
+**syphonwide2.maxpat** and **syphonwide3.maxpat** takes a single syphon input and spreads it over two or three projectors. so with this you can for example have a unity camera/scene that fills a whole room, projecting on three walls. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. for two projectors set the funnel resolution to 3840x1080 and for three projectors use 5760x1080 (so we will be sending very wide textures from unity). next tick run in background, open the max patch (syphonwide2 for two projectors, syphonwide3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
 
 NOTE: the above might be running slow on your computer (specially the multi camera patches). watch the framerate and set the funnel script to 'Send Only'. it's not an optimal solution but might work in some cases (until unity is updated and the multi display problems are solved).
+
+NOTE: instead of max this could be done using mapmapper, resolume, processing, openframeworks or some other syphon enabled software.
+
+supercollider
+--
+
+more on patterns (advanced)
+
+read sc helpfiles for `Pseq`, `Prand`, `Pwrand`, `Pseg` etc.
+
+```
+s.boot;
+
+(
+SynthDef(\pong, {|out= 0, freq= 400, pan= 0, amp= 0.5, mod= 0.5, atk= 0.005, rel= 0.1, cur= -4, gate= 1|
+    var env= EnvGen.ar(Env.asr(atk, amp, rel, cur), gate, doneAction:2);
+    var snd= SinOsc.ar(freq-env, env+mod*2pi, 3**mod).tanh;
+    Out.ar(out, Pan2.ar(snd, pan, env));
+}).add;
+)
+
+//run these one at a time - look at the code what is added each time
+Pdef(\pong, Pbind(\instrument, \pong, \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \dur, 0.25, \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \degree, Pseq([0, 1, 3, 4], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([6, 6, 6], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+Pdef(\pong, Pbind(\instrument, \pong, \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+
+(
+SynthDef(\dist, {|in= 50, out= 0, freq= 500, amount= 25, detune= 1, mix= 1|  //mix is -1 (dry) to 1 (wet)
+    var snd= In.ar(in, 2);
+    var efx= (snd*amount).tanh*SinOsc.ar(freq+[0, detune], 1, 2/amount);
+    Out.ar(out, XFade2.ar(snd, efx, mix));
+}).add;
+)
+e.free; e= Synth(\dist);
+
+Pdef(\pong, Pbind(\instrument, \pong, \out, Pwrand([0, 50], [0.9, 0.1], inf), \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+
+Pdef(\pong, Pbind(\instrument, \pong, \amp, Prand([0.075, 0.05, 0], inf), \rel, Pseq([2.5, 1.5, 1], inf), \out, Pwrand([0, 50], [0.9, 0.1], inf), \scale, Scale.lydian(Tuning.just), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
+
+Pdef(\pong).stop;
+```
 
 extra
 --
 
-unity youtube tutorials by Board To Bits Games <https://www.youtube.com/channel/UCifiUB82IZ6kCkjNXN8dwsQ/videos>
+unity tutorials by Board To Bits Games <https://www.youtube.com/channel/UCifiUB82IZ6kCkjNXN8dwsQ/videos>
+
+unity tips and tutorials by SpeedTutor <https://www.youtube.com/user/SpeedTutor/videos> 
 
 more on shaders <https://thebookofshaders.com>
+
+Eli Fieldsteel's supercollider tutorials <https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC>
+
+supercollider code sharing site <http://sccode.org>
+
+supercollider wiki <http://supercollider.github.io/pages>
+
+supercollider mailing list <http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx>
