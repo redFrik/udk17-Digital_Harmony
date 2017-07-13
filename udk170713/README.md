@@ -207,6 +207,16 @@ Pdef(\pong, Pbind(\instrument, \pong, \out, Pseq([0!8, 50, 0!3, 51].flat, inf), 
 Pdef(\pong, Pbind(\instrument, \pong, \amp, Pseq([0, Pwhite(0, 0.05, 1)], inf), \rel, Pseq([2.5, 1.5], inf),   \out, Pseq([0!8, 50, 0!3, 51].flat, inf), \mtranspose, Pstutter(32, Pseq([0, 1], inf)), \scale, Scale.lydian(Tuning.just), \cur, Pseq([-5, -5, 5], inf), \mod, Pseg(Pseq([0, 1, 0], inf), Pseq([5, 5, 5], inf)), \octave, Pseq([5, 5, 5, 6], inf), \degree, Pseq([0, 1, 3, 4, 5], inf), \pan, Pwhite(-0.5, 0.5, inf), \dur, Pseq([0.25, 0.125, 0.25], inf), \legato, Pseq([0.1, 0.2, 0.4, 0.8], inf))).play;
 
 Pdef(\pong).stop;
+
+
+b= Buffer.readChannel(s, "/Users/asdf/Desktop/musicradar-nu-disco-samples/125bpm Loops n Lines/Kit Breaks/ND_BreakC125-05.wav", channels:[0]);
+(
+SynthDef(\sampler, {|out= 0, pan= 0, buf, amp= 0.5, rate= 1, atk= 0.005, rel= 0.1, cur= -4, gate= 1|
+var env= EnvGen.ar(Env.asr(atk, amp, rel, cur), gate, doneAction:2);
+var snd= PlayBuf.ar(1, buf, rate);
+Out.ar(out, Pan2.ar(snd, pan, env));
+}).add;
+)
 ```
 
 projectors
@@ -224,7 +234,8 @@ things to check with beamers...
 * lamp setting (sometimes you want eco mode to save the lamp - sometimes not)
 * keystone
 * colour profile
-* turn off screensavers, nightshift, f.lux, notifications etc in your system - things that can pop up during performance 
+* turn off screensavers, nightshift, f.lux, notifications etc in your system and other things that can pop up during performance 
+* bring small wooden sticks to adjust the projector
 
 extra
 --
