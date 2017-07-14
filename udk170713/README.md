@@ -13,7 +13,7 @@ here is a useful shader to have installed on the main camera. it can smooth your
 ```javascript
 #pragma strict
 
-private var mat: Material;
+public var mat: Material;
 public var fade: float = 1.0;
 public var posx: float = 0.05;
 public var posy: float = 0.05;
@@ -22,9 +22,6 @@ public var sizey: float = 0.1;
 public var rad: float = 0.707;
 public var radsize: float = 0.1;
 
-function Start() {
-    mat= new Material(Shader.Find("MyShaders/fadeshader"));  //should match name at the top in the .shader file
-}
 function OnRenderImage(src: RenderTexture, dest: RenderTexture) {
     mat.SetFloat("_Fade", fade);
     mat.SetFloat("_PosX", posx);
@@ -91,6 +88,12 @@ Shader "MyShaders/fadeshader" {
     }
 }
 ```
+
+* select Assets / Create / Material
+* optionally give it a name (here 'fadematerial')
+* make sure the Shader in inspector is set to 'MyShaders/fadeshader'
+* select the Main Camera and in its inspector drag&drop the fadematerial icon onto the 'Mat' slot
+* run and you should see a rectangular mask
 
 now in the Main Camera inspector you should see some parameters to control. play around with them. 'Fade' works like a main fader. 0.0 is all black and 1.0 is normal. you can also go beyond 1.0 to brighten up the graphics. 'Posx' and 'Posy' are 0.0 to 1.0 positions of where the edges start, 'Sizex' and 'Sizey' are how wide or long the edge section should be. 'Rad' determines the radius of the circle (set this to >= 0.707 if not used) and 'Radsize' is again how much of a smooth edge there should be.
 
@@ -245,8 +248,8 @@ SynthDef(\sampler, {|out= 0, pan= 0, buf, mod= 0, amp= 0.5, rate= 1, atk= 0.005,
 )
 
 Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, 0.5, \amp, 0.2)).play;
-Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, Pseq([Pseq([0.1], 10), Pseries(0.1, -0.002, 40)], inf), \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
-Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \mod, Pseq([0, 0, 0.1, 1], inf), \dur, Pseq([Pseq([0.1], 10), Pseries(0.1, -0.002, 40)], inf), \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, Pseq([Pseq([0.1], 10), Pseries(0.1, -0.002, 40)], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \mod, Pseq([0, 0, 0.1, 1], inf), \dur, Pseq([Pseq([0.1], 10), Pseries(0.1, -0.002, 40)], inf))).play;
 Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, 0.1, \rate, Pwrand([0, 5, 4, 3, 2, 1], [0.05, 0.15, 0.1, 0.5, 0.1, 0.1], inf)+1)).play;
 Pdef(\myseq, Pbind(\instrument, \sampler, \buf, b, \dur, 0.1, \legato, 1.5, \rel, 0.5, \pan, Pwhite(-1.0, 1.0), \rate, Pwrand([0, 5, 4, 3, 2, 1], [0.05, 0.15, 0.1, 0.5, 0.1, 0.1], inf)+1)).play;
 ```
@@ -275,9 +278,9 @@ or one can install additional patterns that are similar to the built in ugens...
 
 ```supercollider
 Quarks.install("UGenPatterns");  //after installing you will need to recompile and start again
-Pdef(\myseq1, Pbind(\instrument, \pong, \dur, PSinOsc(40)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
-Pdef(\myseq1, Pbind(\instrument, \pong, \dur, PSaw(40)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
-Pdef(\myseq1, Pbind(\instrument, \pong, \dur, PPulse(10, 0.25)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, PSinOsc(40)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, PSaw(40)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
+Pdef(\myseq, Pbind(\instrument, \pong, \dur, PPulse(10, 0.25)*0.1+0.125, \degree, Pseq([0, 5, 4, 3, 2, 1], inf))).play;
 ```
 
 projectors
