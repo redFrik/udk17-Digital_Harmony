@@ -278,6 +278,6 @@ links
 
 <https://www.youtube.com/watch?v=C0uJ4sZelio>
 
-<http://shadertoy.com>
+<https://shadertoy.com>
 
 <https://shawnlawson.github.io/The_Force/>

@@ -354,7 +354,7 @@ leap
 
 for linux see [leap in Linux](#leap-in-linux)
 
-here are instructions on how to use the [leap motion controller](http://leapmotion.com) with unity.
+here are instructions on how to use the [leap motion controller](https://leapmotion.com) with unity.
 
 * go to <https://github.com/leapmotion/LeapMotionCoreAssets> and download the library as zip
 * unpack the zip file and find the three folders: `LeapMotion`, `LeapMotionVR` and `Plugins` (they are all inside the Assets folder)
@@ -373,7 +373,7 @@ to use the controller inside an empty scene do the following...
 Leap in Linux
 --
 
-on linux you will need the repository <https://github.com/leapmotion/unity/>, the dynamic
+on linux you will need the repository <https://github.com/leapmotion/UnityModules>, the dynamic
 libraries are only available on the v2 directory.
 
 download the repository, enter the Pendulum example and prepare the project by
@@ -401,6 +401,6 @@ links
 
 <https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html>
 
-<http://www.alanzucconi.com/2015/06/10/a-gentle-introduction-to-shaders-in-unity3d/>
+<https://www.alanzucconi.com/2015/06/10/a-gentle-introduction-to-shaders-in-unity3d/>
 
 <https://www.youtube.com/channel/UCEklP9iLcpExB8vp_fWQseg/videos>

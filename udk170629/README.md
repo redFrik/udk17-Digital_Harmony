@@ -213,10 +213,10 @@ externals
 
 to do more advanced sound spacialization it is recommended to use some kind of plugin.
 
-* VBAP (part of sc3-plugins) <https://github.com/supercollider/sc3-plugins/releases>
-* Beast <http://www.birmingham.ac.uk/facilities/ea-studios/research/mulch.aspx>
-* ATK <http://www.ambisonictoolkit.net>
-* Zirkonium <http://zkm.de/en/institutes-research-centers/zkm-institute-for-music-and-acoustics/software/zirkonium>
+* VBAP (part of sc3-plugins) <https://supercollider.github.io/sc3-plugins/>
+* Beast <https://www.birmingham.ac.uk/facilities/ea-studios/research/mulch.aspx>
+* ATK <https://www.ambisonictoolkit.net>
+* Zirkonium <https://zkm.de/en/about-the-zkm/organization/hertz-lab/software/zirkonium>
 * etc.
 
 soundcards

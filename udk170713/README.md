@@ -144,9 +144,9 @@ NOTE: all the above is kind of a hack and temporary solution in current unity (5
 syphon multi display
 --
 
-NOTE: this section is for ***mac osx*** only. for windows there is a similar texture sending application here... <http://spout.zeal.co> that should be able to do something similar.
+NOTE: this section is for ***macOs*** only. for Windows there is a similar texture sending application here... <https://spout.zeal.co> that should be able to do something similar.
 
-because unity have big problems with multi-display setups, one can use syphon and these simple max patches to deal with the window management. in this directory you will find four max patches that help run your unity scenes with 2-3 projectors. if you don't have max they should run in the demo version of [max](http://cycling74.com/downloads). you will need to install the Syphon package in max's package manager.
+because unity have big problems with multi-display setups, one can use syphon and these simple max patches to deal with the window management. in this directory you will find four max patches that help run your unity scenes with 2-3 projectors. if you don't have max they should run in the demo version of [MaxMSPJitter](https://cycling74.com/downloads). you will need to install the Syphon package in max's package manager.
 
 **syphonmulti2.maxpat** and **syphonmulti3.maxpat** takes two or three syphon inputs and display them on as many projectors/displays. so with this you can for example have three cameras looking in your scene, project them next to each other and get kind of three separate views of the same object. to try it out install the Funnel package (see [here](https://github.com/redFrik/udk17-Digital_Harmony/tree/master/udk170706#syphon)) and then add the Funnel C# script to all three cameras. set the resolution to 1920x1080, and importantly tick run in background. run and then open the max patch (syphonmulti2 for two cameras + two projectors, syphonmulti3 for three). click start and select a different syphone server (unity camera) for each syphon client. last click set up windows.
 
@@ -312,10 +312,10 @@ more on shaders <https://thebookofshaders.com>
 
 Eli Fieldsteel's supercollider tutorials <https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC>
 
-supercollider code sharing site <http://sccode.org>
+supercollider code sharing site <https://sccode.org>
 
-supercollider wiki <http://supercollider.github.io/pages>
+supercollider wiki <https://supercollider.github.io/pages>
 
-supercollider mailing list <http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx>
+supercollider mailing list <https://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx>
 
-pattern guide <http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html>
+pattern guide <https://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html>

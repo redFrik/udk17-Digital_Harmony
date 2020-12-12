@@ -186,7 +186,7 @@ function WriteHeader() {
 syphon
 --
 
-these instructions are ***mac osx*** only. for windows there is a similar texture sending application here... <http://spout.zeal.co>
+these instructions are ***macOs*** only. for Windows there is a similar texture sending application here... <https://spout.zeal.co>
 
 below demonstrates how to set up Funnel to make your unity scene send graphics to a [syhpon](http://syphon.v002.info) client (i.e. to another application on your own mac or on another computer).
 
@@ -400,4 +400,4 @@ extra
 
 terrain heightmaps from real world data <https://www.youtube.com/watch?v=-vyNbalvXR4&t=4s>
 
-advanced tutorials <http://catlikecoding.com/unity/tutorials/>
+advanced tutorials <https://catlikecoding.com/unity/tutorials/>

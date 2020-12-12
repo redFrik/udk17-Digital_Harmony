@@ -1,13 +1,13 @@
 introduction and overview
 --------------------
 
-* links to previous semesters... <http://redfrik.github.io/udk00-Audiovisual_Programming/>
+* links to previous semesters... <https://redfrik.github.io/udk00-Audiovisual_Programming/>
 * and dates + times for this course... <https://github.com/redFrik/udk17-Digital_Harmony> <-save this page
 
 unity3d
 --
 
-* install [unity](http://unity3d.com)
+* install [unity](https://unity3d.com)
 * create a new 2d project and call it something (here 'picture')
 
 ![picture](01picture.png?raw=true "picture")
@@ -65,7 +65,7 @@ play with 'Noise', 'Gravity Modifier', 'Size over Lifetime' etc.
 supercollider
 --
 
-* install [supercollider](http://supercollider.github.io/download)
+* install [supercollider](https://supercollider.github.io/download)
 * start it and type...
 
 ```supercollider
